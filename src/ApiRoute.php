@@ -43,6 +43,16 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	/**
 	 * @var array
 	 */
+	private $default_actions = [
+		'POST'   => 'create',
+		'GET'    => 'read',
+		'PUT'    => 'update',
+		'DELETE' => 'delete'
+	];
+
+	/**
+	 * @var array
+	 */
 	private $formats = [
 		'json' => 'application/json',
 		'xml'  => 'application/xml'
@@ -59,13 +69,37 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 */
 	public function __construct($path, $presenter = NULL, array $data = [])
 	{
+		/**
+		 * Interface for setting route via annotation or directly
+		 */
 		if (!is_array($path)) {
-			$data['path'] = $path;
+			$data['value'] = $path;
 			$data['presenter'] = $presenter;
+
+			if (empty($data['methods'])) {
+				$this->actions = $this->default_actions;
+			} else {
+				foreach ($data['methods'] as $method => $action) {
+					if (is_string($method)) {
+						$this->setAction($action, $method);
+					} else {
+						$m = $action;
+
+						if (isset($this->default_actions[$m])) {
+							$this->setAction($this->default_actions[$m], $m);
+						}
+					}
+				}
+
+				unset($data['methods']);
+			}
 		} else {
 			$data = $path;
 		}
 
+		/**
+		 * Set Path
+		 */
 		$this->setPath($data['value']);
 		unset($data['value']);
 
@@ -85,7 +119,15 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	public function setAction($method, $action) {
+	public function setAction($action, $method = NULL) {
+		if (is_null($method)) {
+			$method = array_search($action, $this->default_actions);
+		}
+
+		if (!isset($this->default_actions[$method])) {
+			return;
+		}
+
 		$this->actions[$method] = $action;
 	}
 
@@ -271,7 +313,49 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 */
 	function constructUrl(Request $request, Nette\Http\Url $url)
 	{
+		if ($this->presenter != $request->getPresenterName()) {
+			return NULL;
+		}
 
+		$base_url = $url->getBaseUrl();
+
+		$action = $request->getParameter('action');
+		$parameters = $request->getParameters();
+		unset($parameters['action']);
+		$path = ltrim($this->getPath(), '/');
+
+		if (FALSE === array_search($action, $this->actions)) {
+			return FALSE;
+		}
+
+		foreach ($parameters as $name => $value) {
+			if (strpos($path, "<{$name}>") !== FALSE) {
+				$path = str_replace("<{$name}>", $value, $path);
+
+				unset($parameters[$name]);
+			}
+		}
+
+		$path = preg_replace_callback('/\[.+?\]/', function($item) {
+			if (strpos(end($item), '<')) {
+				return '';
+			}
+
+			return end($item);
+		}, $path);
+
+		/**
+		 * There are still some required parameters in url mask
+		 */
+		if (preg_match('/<\w+>/', $path)) {
+			return FALSE;
+		}
+
+		$path = str_replace(['[', ']'], '', $path);
+
+		$query = http_build_query($parameters);
+
+		return $base_url . $path . ($query ? '?' . $query : '');
 	}
 
 }

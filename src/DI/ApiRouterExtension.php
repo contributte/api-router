@@ -37,11 +37,10 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 
 		$routes = $this->findRoutes($builder, $config);
 
-		foreach ($routes as $route) {
-			$router = $builder->getDefinition('router');
-
-			$router->addSetup('offsetSet', [NULL, $route]);
-		}
+		$builder->addDefinition($this->prefix('resolver'))
+			->setClass('Ublaboo\ApiRouter\DI\ApiRoutesResolver')
+			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes])
+			->addTag('run');
 	}
 
 
@@ -77,12 +76,6 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		 */
 		$presenter = $builder->findByTag('nette.presenter');
 		$routes = [];
-		$default = [
-			'POST'   => 'create',
-			'GET'    => 'read',
-			'PUT'    => 'update',
-			'DELETE' => 'delete'
-		];
 
 		foreach ($presenter as $presenter) {
 			$r = ClassType::from($presenter);
@@ -140,18 +133,14 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 						}
 
 						if ($route_action->getMethod()) {
-							$route_action->setAction($route_action->getMethod(), $action);
+							$route_action->setAction($action, $route_action->getMethod());
 						} else {
-							if ($method = array_search($action, $default)) {
-								$route_action->setAction($method, $action);
-							}
+							$route_action->setAction($action);
 						}
 
 						$routes[$route->getPriority()][] = $route_action;
 					} else {
-						if ($method = array_search($action, $default)) {
-							$route->setAction($method, $action);
-						}
+						$route->setAction($action);
 					}
 				}
 
