@@ -66,11 +66,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 			$data = $path;
 		}
 
-		if (!empty($data['value'])) {
-			$this->setPath($data['value']);
-
-			unset($data['value']);
-		}
+		$this->setPath($data['value']);
+		unset($data['value']);
 
 		parent::__construct($data);
 	}
@@ -156,20 +153,6 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	public function toArray()
-	{
-		return [
-			'@ApiRoute' => [
-				'format' => $this->getFormat(),
-				'path' => $this->getPath(),
-				'description' => $this->getDescription(),
-				'methods' => array_keys(array_filter($this->actions)),
-				'parameters' => $this->getParameters()
-			]
-		];
-	}
-
-
 	public function getFormatFull()
 	{
 		return $this->formats[$this->getFormat()];
@@ -194,7 +177,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	{
 		$url = $httpRequest->getUrl();
 
-		$path = '/' . str_replace($url->getBasePath(), '', $url->getPath());
+		$path = '/' . preg_replace('/^' . str_replace('/', '\/', preg_quote($url->getBasePath())) . '/', '', $url->getPath());
 
 		/**
 		 * Build path mask

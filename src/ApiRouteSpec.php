@@ -51,6 +51,11 @@ abstract class ApiRouteSpec extends Nette\Object
 	 */
 	protected $format;
 
+	/**
+	 * @var array
+	 */
+	protected $example = [];
+
 
 	/**
 	 * @param array $data
@@ -85,6 +90,10 @@ abstract class ApiRouteSpec extends Nette\Object
 
 	protected function setPath($path)
 	{
+		if (!$path) {
+			throw new ApiRouteWrongPropertyException('ApiRoute path can not be empty');
+		}
+
 		$this->path = (string) $path;
 	}
 
@@ -162,6 +171,18 @@ abstract class ApiRouteSpec extends Nette\Object
 	public function getFormat()
 	{
 		return $this->format;
+	}
+
+
+	public function setExample($example)
+	{
+		$this->example = $example;
+	}
+
+
+	public function getExample()
+	{
+		return $this->example;
 	}
 
 }
