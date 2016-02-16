@@ -135,6 +135,10 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 							$route_action->setFormat($route->getFormat());
 						}
 
+						if (!$route_action->getSection()) {
+							$route_action->setSection($route->getSection());
+						}
+
 						if ($route_action->getMethod()) {
 							$route_action->setAction($route_action->getMethod(), $action);
 						} else {

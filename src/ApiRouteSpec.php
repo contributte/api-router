@@ -56,6 +56,11 @@ abstract class ApiRouteSpec extends Nette\Object
 	 */
 	protected $example = [];
 
+	/**
+	 * @var string
+	 */
+	protected $section;
+
 
 	/**
 	 * @param array $data
@@ -183,6 +188,18 @@ abstract class ApiRouteSpec extends Nette\Object
 	public function getExample()
 	{
 		return $this->example;
+	}
+
+
+	public function setSection($section)
+	{
+		$this->section = $section;
+	}
+
+
+	public function getSection()
+	{
+		return $this->section;
 	}
 
 }
