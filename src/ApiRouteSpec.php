@@ -137,9 +137,9 @@ abstract class ApiRouteSpec extends Nette\Object
 					));
 				}
 
-				if (!is_scalar($value)) {
+				if (!is_scalar($value) && !is_null($value)) {
 					throw new ApiRouteWrongPropertyException(
-						"You cat set only scalar parameters informations"
+						"You cat set only scalar parameters informations (key [{$info_key}])"
 					);
 				}
 			}
