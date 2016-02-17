@@ -6,7 +6,10 @@ use Tester\TestCase,
 	Tester\Assert,
 	Mockery,
 	Nette,
-	Ublaboo\ApiRouter\ApiRoute;
+	Ublaboo\ApiRouter\ApiRoute,
+	Nette\Http\UrlScript,
+	Nette\Http\Request,
+	Nette\Application\Request as AppRq;
 
 require __DIR__ . '/../bootstrap.php';
 
@@ -49,8 +52,8 @@ final class ApiRouteTest extends TestCase
 		$headers = NULL;
 		$method = 'GET';
 
-		$u = new Nette\Http\UrlScript('http://foo.com/users');
-		$r = new Nette\Http\Request($u, NULL, NULL, NULL, NULL, $headers, $method, NULL, NULL, NULL);
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u, NULL, NULL, NULL, NULL, $headers, $method);
 
 		$route = new ApiRoute('/users', 'U');
 
@@ -58,25 +61,158 @@ final class ApiRouteTest extends TestCase
 
 		$headers = ['X-HTTP-Method-Override' => 'POST'];
 		$method = 'GET';
-		$r = new Nette\Http\Request($u, NULL, NULL, NULL, NULL, $headers, $method, NULL, NULL, NULL);
+		$r = new Request($u, NULL, NULL, NULL, NULL, $headers, $method);
 
 		Assert::same('POST', $route->resolveMethod($r));
 
-		$u = new Nette\Http\UrlScript('http://foo.com/users?__apiRouteMethod=PUT');
-		$r = new Nette\Http\Request($u, NULL, NULL, NULL, NULL, $headers, $method, NULL, NULL, NULL);
+		$u = new UrlScript('http://foo.com/users?__apiRouteMethod=PUT');
+		$r = new Request($u, NULL, NULL, NULL, NULL, $headers, $method);
 
 		Assert::same('POST', $route->resolveMethod($r));
 
-		$u = new Nette\Http\UrlScript('http://foo.com/users?__apiRouteMethod=PUT');
-		$r = new Nette\Http\Request($u, NULL, NULL, NULL, NULL, NULL, $method, NULL, NULL, NULL);
+		$u = new UrlScript('http://foo.com/users?__apiRouteMethod=PUT');
+		$r = new Request($u, NULL, NULL, NULL, NULL, NULL, $method);
 
 		Assert::same('PUT', $route->resolveMethod($r));
 	}
 
 
-	public function testMatch()
+	public function testMatchMethods()
 	{
-		// Code here
+		$route = new ApiRoute('/users', 'U', ['methods' => ['POST' => 'create']]);
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u, NULL, NULL, NULL, NULL, NULL, 'GET');
+
+		Assert::same(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users', 'U', ['methods' => ['GET' => 'read']]);
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u, NULL, NULL, NULL, NULL, NULL, 'POST');
+
+		Assert::same(NULL, $route->match($r));
+	}
+
+
+	public function testMatchUrl()
+	{
+		$route = new ApiRoute('/users/', 'U');
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::same(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users', 'U');
+		$u = new UrlScript('http://foo.com/users/');
+		$r = new Request($u);
+
+		Assert::same(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users[/]', 'U');
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users[/]', 'U');
+		$u = new UrlScript('http://foo.com/users/');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $route->match($r));
+	}
+
+
+	public function testMatchParameters()
+	{
+		$route = new ApiRoute('/users/<id>', 'U');
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::same(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users/<id>', 'U');
+		$u = new UrlScript('http://foo.com/users/aaaa');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same('aaaa', $appRq->getParameter('id'));
+
+		$route = new ApiRoute('/users[/<id>]', 'U');
+		$u = new UrlScript('http://foo.com/users/aaaa');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same('aaaa', $appRq->getParameter('id'));
+
+		$route = new ApiRoute('/users[/<id>]', 'U');
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(NULL, $appRq->getParameter('id'));
+
+		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::same(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
+		$u = new UrlScript('http://foo.com/users/a');
+		$r = new Request($u);
+
+		Assert::same(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
+		$u = new UrlScript('http://foo.com/users/l-p');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $route->match($r));
+
+		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
+		$u = new UrlScript('http://foo.com/users/l-p/8/aa');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same('l', $appRq->getParameter('l'));
+		Assert::same('p', $appRq->getParameter('p'));
+		Assert::same(8, (int) $appRq->getParameter('id'));
+		Assert::same('aa', $appRq->getParameter('a'));
+
+		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
+		$u = new UrlScript('http://foo.com/users/l-p/8/aa?bubla=a');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same('a', $appRq->getParameter('bubla'));
+		Assert::same('U', $appRq->getPresenterName());
+	}
+
+
+	public function testConstructUrl()
+	{
+		$r = new AppRq('Reources:Users');
+		$u = new UrlScript('http://foo.com/users');
+		$route = new ApiRoute('/users/<id>', 'U');
+
+		Assert::same(NULL, $route->constructUrl($r, $u));
+
+		$r = new AppRq('Reources:Users', 'GET', ['id' => 8]);
+		$u = new UrlScript('http://foo.com/users');
+		$route = new ApiRoute('/users/<id>', 'U');
+
+		Assert::same(NULL, $route->constructUrl($r, $u));
+
+		$r = new AppRq('Resources:Users', 'GET', ['id' => 8, 'action' => 'create']);
+		$u = new UrlScript('http://foo.com/');
+		$route = new ApiRoute('/users/<id>', 'Resources:Users');
+
+		Assert::same('http://foo.com/users/8', $route->constructUrl($r, $u));
+
+		$r = new AppRq('Resources:Users', 'GET', ['id' => 8, 'action' => 'create', 'f' => 'a', 'b' => 'a']);
+		$u = new UrlScript('http://foo.com/');
+		$route = new ApiRoute('/users/<id>[/<f>-<b>]', 'Resources:Users');
+
+		Assert::same('http://foo.com/users/8/a-a', $route->constructUrl($r, $u));
 	}
 
 }
