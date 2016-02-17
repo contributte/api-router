@@ -155,6 +155,12 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
 		}
 
+		if ($method = Strings::upper($request->getQuery('__apiRouteMethod'))) {
+			if (isset($this->actions[$method])) {
+				return $method;
+			}
+		}
+
 		return Strings::upper($request->getMethod());
 	}
 
@@ -266,7 +272,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 */
 		$this->resolveFormat($httpRequest);
 		$method = $this->resolveMethod($httpRequest);
-		$action = $this->actions[$this->resolveMethod($httpRequest)];
+		$action = $this->actions[$method];
 
 		if (!$action) {
 			return NULL;
@@ -325,7 +331,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		$path = ltrim($this->getPath(), '/');
 
 		if (FALSE === array_search($action, $this->actions)) {
-			return FALSE;
+			return NULL;
 		}
 
 		foreach ($parameters as $name => $value) {
@@ -348,7 +354,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 * There are still some required parameters in url mask
 		 */
 		if (preg_match('/<\w+>/', $path)) {
-			return FALSE;
+			return NULL;
 		}
 
 		$path = str_replace(['[', ']'], '', $path);
