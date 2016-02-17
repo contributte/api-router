@@ -52,9 +52,9 @@ abstract class ApiRouteSpec extends Nette\Object
 	protected $format;
 
 	/**
-	 * @var array
+	 * @var mixed
 	 */
-	protected $example = [];
+	protected $example;
 
 	/**
 	 * @var string
@@ -81,18 +81,29 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
+	/**
+	 * @param string $description
+	 * @return void
+	 */
 	public function setDescription($description)
 	{
 		$this->description = $description;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getDescription()
 	{
 		return $this->description;
 	}
 
 
+	/**
+	 * @param string $path
+	 * @return void
+	 */
 	protected function setPath($path)
 	{
 		if (!$path) {
@@ -103,24 +114,37 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getPath()
 	{
 		return $this->path;
 	}
 
 
+	/**
+	 * @param string $method
+	 * @return void
+	 */
 	protected function setMethod($method)
 	{
 		$this->method = strtoupper($method);
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getMethod()
 	{
 		return $this->method;
 	}
 
 
+	/**
+	 * @param array $parameters
+	 */
 	protected function setParameters(array $parameters)
 	{
 		foreach ($parameters as $key => $info) {
@@ -149,54 +173,85 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getParameters()
 	{
 		return $this->parameters;
 	}
 
 
+	/**
+	 * @param int $priority
+	 * @return void
+	 */
 	public function setPriority($priority)
 	{
 		$this->priority = $priority;
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function getPriority()
 	{
 		return $this->priority;
 	}
 
 
+	/**
+	 * @param string $format
+	 * @return void
+	 */
 	public function setFormat($format)
 	{
 		$this->format = $format;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getFormat()
 	{
 		return $this->format;
 	}
 
 
+	/**
+	 * @param mixed $example
+	 * @return void
+	 */
 	public function setExample($example)
 	{
 		$this->example = $example;
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function getExample()
 	{
 		return $this->example;
 	}
 
 
+	/**
+	 * @param string $section
+	 * @return void
+	 */
 	public function setSection($section)
 	{
 		$this->section = $section;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getSection()
 	{
 		return $this->section;

@@ -65,7 +65,10 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 
 	/**
-	 * @param mixed $data
+	 * @param mixed  $data
+	 * @param string $presenter
+	 * @param array  $data
+	 * @return void
 	 */
 	public function __construct($path, $presenter = NULL, array $data = [])
 	{
@@ -107,18 +110,30 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
+	/**
+	 * @param string $presenter
+	 * @return void
+	 */
 	public function setPresenter($presenter)
 	{
 		$this->presenter = $presenter;
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getPresenter()
 	{
 		return $this->presenter;
 	}
 
 
+	/**
+	 * @param string $action
+	 * @param string $method
+	 * @return void
+	 */
 	public function setAction($action, $method = NULL) {
 		if (is_null($method)) {
 			$method = array_search($action, $this->default_actions);
@@ -132,24 +147,40 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
+	/**
+	 * @param array $defaults
+	 * @return void
+	 */
 	private function setDefaults(array $defaults)
 	{
 		$this->defaults = $defaults;
 	}
 
 
+	/**
+	 * @param  string $p
+	 * @return string
+	 */
 	private function getRequirement($p)
 	{
 		return isset($this->requirements[$p]) ? $this->requirements[$p] : '[\s]+';
 	}
 
 
+	/**
+	 * @param  string $string
+	 * @return string
+	 */
 	public function prepareForMatch($string)
 	{
 		return sprintf('/%s/', str_replace('/', '\/', $string));
 	}
 
 
+	/**
+	 * Get all parameters from url mask
+	 * @return array
+	 */
 	public function getPlacehodlerParameters()
 	{
 		if ($this->placeholder_order) {
@@ -166,6 +197,10 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
+	/**
+	 * @param  Nette\Http\IRequest $httpRequest
+	 * @return void
+	 */
 	public function resolveFormat(Nette\Http\IRequest $httpRequest)
 	{
 		if ($this->getFormat()) {
@@ -186,17 +221,27 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getFormatFull()
 	{
 		return $this->formats[$this->getFormat()];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getMethods()
 	{
 		return array_keys(array_filter($this->actions));
 	}
 
 
+	/**
+	 * @param  Nette\Http\IRequest $request
+	 * @return string
+	 */
 	protected function resolveMethod(Nette\Http\IRequest $request) {
 		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
@@ -212,6 +257,10 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
+	/**
+	 * Get required parameters from url mask
+	 * @return array
+	 */
 	private function getRequiredParams()
 	{
 		$path = preg_replace('/\[[^\[]+\]/', '', $this->getPath());

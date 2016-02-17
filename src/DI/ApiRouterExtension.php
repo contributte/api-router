@@ -9,7 +9,6 @@
 namespace Ublaboo\ApiRouter\DI;
 
 use Ublaboo\ApiRouter\ApiRoute;
-use Ublaboo\ApiRouter\ApiRouteSpec;
 use Nette\Reflection\ClassType;
 use Nette;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -19,17 +18,9 @@ use Doctrine\Common\Annotations\FileCacheReader;
 class ApiRouterExtension extends Nette\DI\CompilerExtension
 {
 
-	private $defaults = [
-		
-	];
-
-
-	public function loadConfiguration()
-	{
-		$this->config = $this->_getConfig();
-	}
-
-
+	/**
+	 * @return void
+	 */
 	public function beforeCompile()
 	{
 		$builder = $this->getContainerBuilder();
@@ -44,15 +35,13 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	private function _getConfig()
-	{
-		$config = $this->validateConfig($this->defaults, $this->config);
-
-		return $config;
-	}
-
-
-	private function findRoutes($builder, $config)
+	/**
+	 * [findRoutes description]
+	 * @param  [type] $builder [description]
+	 * @param  array $config
+	 * @return array
+	 */
+	private function findRoutes(Nette\DI\ContainerBulder $builder, $config)
 	{
 		/**
 		 * Prepare AnnotationRegistry
