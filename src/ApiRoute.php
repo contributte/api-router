@@ -150,21 +150,6 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	protected function resolveMethod(Nette\Http\IRequest $request) {
-		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
-			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
-		}
-
-		if ($method = Strings::upper($request->getQuery('__apiRouteMethod'))) {
-			if (isset($this->actions[$method])) {
-				return $method;
-			}
-		}
-
-		return Strings::upper($request->getMethod());
-	}
-
-
 	public function getPlacehodlerParameters()
 	{
 		if ($this->placeholder_order) {
@@ -173,8 +158,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 		$return = [];
 
-		$mask = preg_replace_callback('/(<(\w+)>)|\[|\]/', function($item) use (&$return) {
-			$return[] = $placeholder;
+		$mask = preg_replace_callback('/<(\w+)>/', function($item) use (&$return) {
+			$return[] = end($item);
 		}, $this->path);
 
 		return $return;
@@ -209,6 +194,35 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	public function getMethods()
 	{
 		return array_keys(array_filter($this->actions));
+	}
+
+
+	protected function resolveMethod(Nette\Http\IRequest $request) {
+		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
+			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
+		}
+
+		if ($method = Strings::upper($request->getQuery('__apiRouteMethod'))) {
+			if (isset($this->actions[$method])) {
+				return $method;
+			}
+		}
+
+		return Strings::upper($request->getMethod());
+	}
+
+
+	private function getRequiredParams()
+	{
+		$path = preg_replace('/\[[^\[]+\]/', '', $this->getPath());
+
+		$required = [];
+
+		preg_replace_callback('/<(\w+)>/', function($item) use (&$required) {
+			$required[] = end($item);
+		}, $path);
+
+		return $required;
 	}
 
 
@@ -283,6 +297,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 */
 		$params = $httpRequest->getQuery();
 		$params['action'] = $action;
+		$required_params = $this->getRequiredParams();
 
 		/**
 		 * Route mask parameters
@@ -292,6 +307,13 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		foreach ($this->placeholder_order as $key => $name) {
 			if (NULL !== $name) {
 				$params[$name] = reset($matches[$key]) ?: NULL;
+
+				/**
+				 * Required parameters
+				 */
+				if (empty($params[$name]) && in_array($name, $required_params)) {
+					return NULL;
+				}
 			}
 		}
 
