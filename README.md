@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/ublaboo/api-docu.svg?branch=master)](https://travis-ci.org/ublaboo/api-docu)
-[![Latest Stable Version](https://poser.pugx.org/ublaboo/api-docu/v/stable)](https://packagist.org/packages/ublaboo/api-docu)
-[![License](https://poser.pugx.org/ublaboo/api-docu/license)](https://packagist.org/packages/ublaboo/api-docu)
-[![Total Downloads](https://poser.pugx.org/ublaboo/api-docu/downloads)](https://packagist.org/packages/ublaboo/api-docu)
+[![Build Status](https://travis-ci.org/ublaboo/api-router.svg?branch=master)](https://travis-ci.org/ublaboo/api-router)
+[![Latest Stable Version](https://poser.pugx.org/ublaboo/api-router/v/stable)](https://packagist.org/packages/ublaboo/api-router)
+[![License](https://poser.pugx.org/ublaboo/api-router/license)](https://packagist.org/packages/ublaboo/api-router)
+[![Total Downloads](https://poser.pugx.org/ublaboo/api-router/downloads)](https://packagist.org/packages/ublaboo/api-router)
 
 #ApiRouter
 
