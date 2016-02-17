@@ -1,0 +1,8 @@
+Nette\Application\Request::__set_state(array(
+	'method' => 'GET',
+	'flags' => array('secured' => FALSE),
+	'name' => 'U',
+	'params' => array('action' => 'read', 'l' => 'l', 'p' => 'p', 'id' => NULL, 'a' => NULL),
+	'post' => array(),
+	'files' => array(),
+))

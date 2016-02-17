@@ -13,6 +13,12 @@ use Nette;
 class ApiRoutesResolver extends Nette\Object
 {
 
+	/**
+	 * Place REST API routes at the beginnig of all routes
+	 * @param  Nette\Application\IRouter $router
+	 * @param  array                     $routes
+	 * @return void
+	 */
 	public function prepandRoutes(Nette\Application\IRouter $router, array $routes)
 	{
 		$user_routes = [];
