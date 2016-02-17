@@ -41,7 +41,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	 * @param  array $config
 	 * @return array
 	 */
-	private function findRoutes(Nette\DI\ContainerBulder $builder, $config)
+	private function findRoutes(Nette\DI\ContainerBuilder $builder, $config)
 	{
 		/**
 		 * Prepare AnnotationRegistry
