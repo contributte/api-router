@@ -171,7 +171,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * @param  string $string
 	 * @return string
 	 */
-	public function prepareForMatch($string)
+	private function prepareForMatch($string)
 	{
 		return sprintf('/%s/', str_replace('/', '\/', $string));
 	}
@@ -194,6 +194,24 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		}, $this->path);
 
 		return $return;
+	}
+
+
+	/**
+	 * Get required parameters from url mask
+	 * @return array
+	 */
+	public function getRequiredParams()
+	{
+		$path = preg_replace('/\[[^\[]+\]/', '', $this->getPath());
+
+		$required = [];
+
+		preg_replace_callback('/<(\w+)>/', function($item) use (&$required) {
+			$required[] = end($item);
+		}, $path);
+
+		return $required;
 	}
 
 
@@ -242,7 +260,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * @param  Nette\Http\IRequest $request
 	 * @return string
 	 */
-	protected function resolveMethod(Nette\Http\IRequest $request) {
+	public function resolveMethod(Nette\Http\IRequest $request) {
 		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
 		}
@@ -254,24 +272,6 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		}
 
 		return Strings::upper($request->getMethod());
-	}
-
-
-	/**
-	 * Get required parameters from url mask
-	 * @return array
-	 */
-	private function getRequiredParams()
-	{
-		$path = preg_replace('/\[[^\[]+\]/', '', $this->getPath());
-
-		$required = [];
-
-		preg_replace_callback('/<(\w+)>/', function($item) use (&$required) {
-			$required[] = end($item);
-		}, $path);
-
-		return $required;
 	}
 
 

@@ -148,8 +148,8 @@ abstract class ApiRouteSpec extends Nette\Object
 	protected function setParameters(array $parameters)
 	{
 		foreach ($parameters as $key => $info) {
-			if ('/<(\w+)>/' === strpos($this->getPath(), "<{$key}>")) {
-				throw new ApiRouteWrongPropertyException("Parameter $key is not present in url mask");
+			if (FALSE === strpos($this->getPath(), "<{$key}>")) {
+				throw new ApiRouteWrongPropertyException("Parameter <$key> is not present in the url mask");
 			}
 
 			foreach ($info as $info_key => $value) {
