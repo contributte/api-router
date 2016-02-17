@@ -16,9 +16,14 @@ class ApiRoutesResolver extends Nette\Object
 	public function prepandRoutes(Nette\Application\IRouter $router, array $routes)
 	{
 		$user_routes = [];
+		$keys = [];
 
 		foreach ($router as $key => $route) {
 			$user_routes[] = $route;
+			$keys[] = $key;
+		}
+
+		foreach (array_reverse($keys) as $key) {
 			unset($router[$key]);
 		}
 
