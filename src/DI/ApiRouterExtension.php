@@ -19,14 +19,24 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 {
 
 	/**
+	 * @var array
+	 */
+	private $defaults = [
+		'ignoreAnnotation' => []
+	];
+
+
+	/**
 	 * @return void
 	 */
 	public function beforeCompile()
 	{
-		$builder = $this->getContainerBuilder();
-		$config = $this->compiler->getConfig();
+		$config = $this->_getConfig();
 
-		$routes = $this->findRoutes($builder, $config);
+		$builder = $this->getContainerBuilder();
+		$compiler_config = $this->compiler->getConfig();
+
+		$routes = $this->findRoutes($builder, $compiler_config, $config);
 
 		$builder->addDefinition($this->prefix('resolver'))
 			->setClass('Ublaboo\ApiRouter\DI\ApiRoutesResolver')
@@ -41,7 +51,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	 * @param  array $config
 	 * @return array
 	 */
-	private function findRoutes(Nette\DI\ContainerBuilder $builder, $config)
+	private function findRoutes(Nette\DI\ContainerBuilder $builder, $compiler_config, $config)
 	{
 		/**
 		 * Prepare AnnotationRegistry
@@ -50,14 +60,19 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		AnnotationRegistry::registerFile(__DIR__ . '/../ApiRouteSpec.php');
 
 		AnnotationReader::addGlobalIgnoredName('persistent');
+		AnnotationReader::addGlobalIgnoredName('inject');
+
+		foreach ($config['ignoreAnnotation'] as $ignore) {
+			AnnotationReader::addGlobalIgnoredName($ignore);
+		}
 
 		/**
 		 * Prepare AnnotationReader - use cached values
 		 */
 		$reader = new FileCacheReader(
 			new AnnotationReader,
-			$config['parameters']['tempDir'] . '/cache/ApiRouter.Annotations',
-			$debug = $config['parameters']['debugMode']
+			$compiler_config['parameters']['tempDir'] . '/cache/ApiRouter.Annotations',
+			$debug = $compiler_config['parameters']['debugMode']
 		);
 
 		/**
@@ -149,6 +164,18 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		}
 
 		return $return;
+	}
+
+
+	private function _getConfig()
+	{
+		$config = $this->validateConfig($this->defaults, $this->config);
+
+		if (!is_array($config['ignoreAnnotation'])) {
+			$config['ignoreAnnotation'] = [$config['ignoreAnnotation']];
+		}
+
+		return $config;
 	}
 
 }
