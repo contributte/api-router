@@ -52,7 +52,7 @@ final class ApiRouteSpecTest extends TestCase
 	{
 		$route = new ApiRoute('/u', 'Users', ['tags' => ['public', 'secured' => '#e74c3c']]);
 
-		Assert::same([['public' => '#9b59b6', 'secured' => '#e74c3c']], $route->getTags());
+		Assert::same(['public' => "#9b59b6", 'secured' => "#e74c3c"], $route->getTags());
 	}
 
 }
