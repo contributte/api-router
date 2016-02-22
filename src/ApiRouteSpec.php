@@ -61,6 +61,11 @@ abstract class ApiRouteSpec extends Nette\Object
 	 */
 	protected $section;
 
+	/**
+	 * @var array
+	 */
+	protected $tags = [];
+
 
 	/**
 	 * @param array $data
@@ -255,6 +260,38 @@ abstract class ApiRouteSpec extends Nette\Object
 	public function getSection()
 	{
 		return $this->section;
+	}
+
+
+	/**
+	 * @param array $tags
+	 * @return void
+	 */
+	public function setTags(array $tags)
+	{
+		$this->tags = $tags;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getTags()
+	{
+		$return = [];
+
+		/**
+		 * Tag may be saves aither with color: [tagName => color] or without: [tagName]
+		 */
+		foreach ($this->tags as $tag => $color) {
+			if (is_numeric($tag)) {
+				$return[$color] = '#9b59b6';
+			} else {
+				$return[$tag] = $color;
+			}
+		}
+
+		return $return;
 	}
 
 }
