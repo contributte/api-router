@@ -203,7 +203,12 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 */
 	public function getRequiredParams()
 	{
-		$path = preg_replace('/\[[^\[]+\]/', '', $this->getPath());
+		$regex = '/\[[^\[]+?\]/';
+		$path = $this->getPath();
+
+		while (preg_match($regex, $path)) {
+			$path = preg_replace($regex, '', $path);
+		}
 
 		$required = [];
 
@@ -298,7 +303,9 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 		$mask = preg_replace_callback('/(<(\w+)>)|\[|\]/', function($item) use (&$order, $parameters) {
 			if ($item[0] == '[' || $item[0] == ']') {
-				$order[] = NULL;
+				if ($item[0] == '[') {
+					$order[] = NULL;
+				}
 
 				return $item[0];
 			}
@@ -309,7 +316,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 			$regex = isset($parameter['requirement']) ? $parameter['requirement'] : '\w+';
 			$has_default = array_key_exists('default', $parameter);
-			
+
 			if ($has_default) {
 				$order[] = $placeholder;
 
@@ -354,7 +361,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		array_shift($matches);
 
 		foreach ($this->placeholder_order as $key => $name) {
-			if (NULL !== $name) {
+			if (NULL !== $name && isset($matches[$key])) {
 				$params[$name] = reset($matches[$key]) ?: NULL;
 
 				/**
@@ -406,7 +413,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		}
 
 		foreach ($parameters as $name => $value) {
-			if (strpos($path, "<{$name}>") !== FALSE) {
+			if (strpos($path, "<{$name}>") !== FALSE && $value !== NULL) {
 				$path = str_replace("<{$name}>", $value, $path);
 
 				unset($parameters[$name]);

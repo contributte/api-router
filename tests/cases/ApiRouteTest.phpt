@@ -185,6 +185,76 @@ final class ApiRouteTest extends TestCase
 		Assert::notSame(NULL, $appRq = $route->match($r));
 		Assert::same('a', $appRq->getParameter('bubla'));
 		Assert::same('U', $appRq->getPresenterName());
+
+
+		$route = new ApiRoute('/users[/<id>][/<foo>][/<bar>]', 'U');
+
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(NULL, $appRq->getParameter('id'));
+		Assert::same(NULL, $appRq->getParameter('foo'));
+		Assert::same(NULL, $appRq->getParameter('bar'));
+
+		$u = new UrlScript('http://foo.com/users/1');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq->getParameter('id'));
+		Assert::same(NULL, $appRq->getParameter('foo'));
+		Assert::same(NULL, $appRq->getParameter('bar'));
+
+		$u = new UrlScript('http://foo.com/users/1/foo');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq->getParameter('id'));
+		Assert::same('foo', $appRq->getParameter('foo'));
+		Assert::same(NULL, $appRq->getParameter('bar'));
+
+		$u = new UrlScript('http://foo.com/users/1/foo/bar');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq->getParameter('id'));
+		Assert::same('foo', $appRq->getParameter('foo'));
+		Assert::same('bar', $appRq->getParameter('bar'));
+
+
+		$route = new ApiRoute('/users[/<id>[/<foo>[/<bar>]]]', 'U');
+
+		$u = new UrlScript('http://foo.com/users');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(NULL, $appRq->getParameter('id'));
+		Assert::same(NULL, $appRq->getParameter('foo'));
+		Assert::same(NULL, $appRq->getParameter('bar'));
+
+		$u = new UrlScript('http://foo.com/users/1');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq->getParameter('id'));
+		Assert::same(NULL, $appRq->getParameter('foo'));
+		Assert::same(NULL, $appRq->getParameter('bar'));
+
+		$u = new UrlScript('http://foo.com/users/1/foo');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq->getParameter('id'));
+		Assert::same('foo', $appRq->getParameter('foo'));
+		Assert::same(NULL, $appRq->getParameter('bar'));
+
+		$u = new UrlScript('http://foo.com/users/1/foo/bar');
+		$r = new Request($u);
+
+		Assert::notSame(NULL, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq->getParameter('id'));
+		Assert::same('foo', $appRq->getParameter('foo'));
+		Assert::same('bar', $appRq->getParameter('bar'));
 	}
 
 
