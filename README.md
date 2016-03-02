@@ -2,6 +2,7 @@
 [![Latest Stable Version](https://poser.pugx.org/ublaboo/api-router/v/stable)](https://packagist.org/packages/ublaboo/api-router)
 [![License](https://poser.pugx.org/ublaboo/api-router/license)](https://packagist.org/packages/ublaboo/api-router)
 [![Total Downloads](https://poser.pugx.org/ublaboo/api-router/downloads)](https://packagist.org/packages/ublaboo/api-router)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/ublaboo/help)
 
 #ApiRouter
 
