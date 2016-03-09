@@ -13,7 +13,9 @@ use Nette\Reflection\ClassType;
 use Nette;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\FileCacheReader;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\Common\Annotations\Reader;
 
 class ApiRouterExtension extends Nette\DI\CompilerExtension
 {
@@ -24,6 +26,11 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	private $defaults = [
 		'ignoreAnnotation' => []
 	];
+
+	/**
+	 * @var Reader
+	 */
+	private $reader;
 
 
 	/**
@@ -36,7 +43,10 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$compiler_config = $this->compiler->getConfig();
 
-		$routes = $this->findRoutes($builder, $compiler_config, $config);
+		$this->setupReaderAnnotations($config);
+		$this->setupReader($compiler_config);
+
+		$routes = $this->findRoutes($builder);
 
 		$builder->addDefinition($this->prefix('resolver'))
 			->setClass('Ublaboo\ApiRouter\DI\ApiRoutesResolver')
@@ -46,12 +56,11 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 
 
 	/**
-	 * [findRoutes description]
-	 * @param  [type] $builder [description]
+	 * [setupReaderAnnotations description]
 	 * @param  array $config
-	 * @return array
+	 * @return void
 	 */
-	private function findRoutes(Nette\DI\ContainerBuilder $builder, $compiler_config, $config)
+	private function setupReaderAnnotations($config)
 	{
 		/**
 		 * Prepare AnnotationRegistry
@@ -65,96 +74,137 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		foreach ($config['ignoreAnnotation'] as $ignore) {
 			AnnotationReader::addGlobalIgnoredName($ignore);
 		}
+	}
+
+
+	/**
+	 * @param  array $compiler_config
+	 * @return void
+	 */
+	private function setupReader($compiler_config)
+	{
+		$cache_path = $compiler_config['parameters']['tempDir'] . '/cache/ApiRouter.Annotations';
 
 		/**
 		 * Prepare AnnotationReader - use cached values
 		 */
-		$reader = new FileCacheReader(
+		$this->reader = new CachedReader(
 			new AnnotationReader,
-			$compiler_config['parameters']['tempDir'] . '/cache/ApiRouter.Annotations',
-			$debug = $compiler_config['parameters']['debugMode']
+			new FilesystemCache($cache_path),
+			$compiler_config['parameters']['debugMode']
 		);
+	}
 
+
+	/**
+	 * @param  Nette\DI\ContainerBuilder $builder
+	 * @return array
+	 */
+	private function findRoutes(Nette\DI\ContainerBuilder $builder)
+	{
 		/**
 		 * Find all presenters and their routes
 		 */
-		$presenter = $builder->findByTag('nette.presenter');
+		$presenters = $builder->findByTag('nette.presenter');
 		$routes = [];
 
-		foreach ($presenter as $presenter) {
-			$r = ClassType::from($presenter);
-
-			$route = $reader->getClassAnnotation($r, ApiRoute::class);
-
-			if ($route) {
-				/**
-				 * Add route to priority-sorted list
-				 */
-				if (empty($routes[$route->getPriority()])) {
-					$routes[$route->getPriority()] = [];
-				}
-
-				$route->setDescription($r->getAnnotation('description'));
-
-				if (!$route->getPresenter()) {
-					$route->setPresenter(preg_replace('/Presenter$/', '', $r->getShortName()));
-				}
-
-				/**
-				 * Find apropriate methods
-				 */
-				foreach ($r->getMethods() as $method_r) {
-					$route_action = $reader->getMethodAnnotation($method_r, ApiRoute::class);
-
-					/**
-					 * Get action without that ^action string
-					 */
-					$action = lcfirst(preg_replace('/^action/', '', $method_r->getName()));
-
-					/**
-					 * Route can be defined also for perticular action
-					 */
-					if ($route_action) {
-						$route_action->setDescription($method_r->getAnnotation('description'));
-
-						/**
-						 * Action route will inherit presenter name nad priority from parent route
-						 */
-						if (!$route_action->getPresenter()) {
-							$route_action->setPresenter($route->getPresenter());
-						}
-
-						if (!$route_action->getPriority()) {
-							$route_action->setPriority($route->getPriority());
-						}
-
-						if (!$route_action->getFormat()) {
-							$route_action->setFormat($route->getFormat());
-						}
-
-						if (!$route_action->getSection()) {
-							$route_action->setSection($route->getSection());
-						}
-
-						if ($route_action->getMethod()) {
-							$route_action->setAction($action, $route_action->getMethod());
-						} else {
-							$route_action->setAction($action);
-						}
-
-						$routes[$route->getPriority()][] = $route_action;
-					} else {
-						$route->setAction($action);
-					}
-				}
-
-				$routes[$route->getPriority()][] = $route;
-			}
+		foreach ($presenters as $presenter) {
+			$this->findRoutesInPresenter($presenter, $routes);
 		}
 
 		/**
 		 * Return routes sorted by priority
 		 */
+		return $this->sortByPriority($routes);
+	}
+
+
+	/**
+	 * @param  string $presenter
+	 * @param  array $routes
+	 * @return void
+	 */
+	private function findRoutesInPresenter($presenter, & $routes)
+	{
+		$r = ClassType::from($presenter);
+
+		$route = $this->reader->getClassAnnotation($r, ApiRoute::class);
+
+		if (!$route) {
+			return [];
+		}
+
+		/**
+		 * Add route to priority-half-sorted list
+		 */
+		if (empty($routes[$route->getPriority()])) {
+			$routes[$route->getPriority()] = [];
+		}
+
+		$route->setDescription($r->getAnnotation('description'));
+
+		if (!$route->getPresenter()) {
+			$route->setPresenter(preg_replace('/Presenter$/', '', $r->getShortName()));
+		}
+
+		/**
+		 * Find apropriate methods
+		 */
+		foreach ($r->getMethods() as $method_r) {
+			$this->findPresenterMethodRoute($method_r, $routes, $route);
+		}
+
+		$routes[$route->getPriority()][] = $route;
+	}
+
+
+	/**
+	 * @param  \ReflectionMethod $method_reflection
+	 * @param  array             $routes
+	 * @param  ApiRoute          $route
+	 * @return void
+	 */
+	private function findPresenterMethodRoute(\ReflectionMethod $method_reflection, & $routes, ApiRoute $route)
+	{
+		$action_route = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
+
+		/**
+		 * Get action without that ^action string
+		 */
+		$action = lcfirst(preg_replace('/^action/', '', $method_reflection->name));
+
+		/**
+		 * Route can be defined also for particular action
+		 */
+		if (!$action_route) {
+			$route->setAction($action);
+
+			return;
+		}
+
+		if ($method_reflection instanceof Nette\Reflection\Method) {
+			$action_route->setDescription($method_reflection->getAnnotation('description'));
+		}
+
+		/**
+		 * Action route will inherit presenter name, priority, etc from parent route
+		 */
+		$action_route->setPresenter($action_route->getPresenter() ?: $route->getPresenter());
+		$action_route->setPriority($action_route->getPriority() ?: $route->getPriority());
+		$action_route->setFormat($action_route->getFormat() ?: $route->getFormat());
+		$action_route->setSection($action_route->getSection() ?: $route->getSection());
+		$action_route->setAction($action, $action_route->getMethod() ?: NULL);
+
+		$routes[$route->getPriority()][] = $action_route;
+	}
+
+
+	/**
+	 * @param  array $routes
+	 * @return array
+	 */
+	private function sortByPriority(array $routes)
+	{
 		$return = [];
 
 		foreach ($routes as $priority => $priority_routes) {
@@ -167,6 +217,9 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	}
 
 
+	/**
+	 * @return array
+	 */
 	private function _getConfig()
 	{
 		$config = $this->validateConfig($this->defaults, $this->config);
@@ -175,7 +228,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 			$config['ignoreAnnotation'] = [$config['ignoreAnnotation']];
 		}
 
-		return $config;
+		return (array) $config;
 	}
 
 }

@@ -9,23 +9,61 @@
 namespace Ublaboo\ApiRouter\DI;
 
 use Nette;
+use Nette\Application\Routers\RouteList;
+use Nette\Application\IRouter;
+use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
 
 class ApiRoutesResolver extends Nette\Object
 {
 
 	/**
 	 * Place REST API routes at the beginnig of all routes
-	 * @param  Nette\Application\IRouter $router
-	 * @param  array                     $routes
+	 * @param  IRouter $router
+	 * @param  array   $routes
 	 * @return void
 	 */
-	public function prepandRoutes(Nette\Application\IRouter $router, array $routes)
+	public function prepandRoutes(IRouter $router, array $routes)
 	{
-		$user_routes = [];
+		if (empty($routes)) {
+			return;
+		}
+
+		if (!($router instanceof \Traversable) || !($router instanceof \ArrayAccess)) {
+			throw new ApiRouteWrongRouterException(sprintf(
+				'ApiRoutesResolver can not add ApiRoutes to your router. Use for example %s instead',
+				RouteList::class
+			));
+		}
+
+		$user_routes = $this->findAndDestroyUserRoutes($router);
+
+		/**
+		 * Add ApiRoutes first
+		 */
+		foreach ($routes as $route) {
+			$router[] = $route;
+		}
+
+		/**
+		 * User routes on second place
+		 */
+		foreach ($user_routes as $route) {
+			$router[] = $route;
+		}
+	}
+
+
+	/**
+	 * @param  IRouter $router
+	 * @return array
+	 */
+	public function findAndDestroyUserRoutes(IRouter $router)
+	{
 		$keys = [];
+		$return = [];
 
 		foreach ($router as $key => $route) {
-			$user_routes[] = $route;
+			$return[] = $route;
 			$keys[] = $key;
 		}
 
@@ -33,13 +71,7 @@ class ApiRoutesResolver extends Nette\Object
 			unset($router[$key]);
 		}
 
-		foreach ($routes as $route) {
-			$router[] = $route;
-		}
-
-		foreach ($user_routes as $route) {
-			$router[] = $route;
-		}
+		return $return;
 	}
 
 }

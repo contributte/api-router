@@ -14,6 +14,8 @@ use Nette;
 use Nette\Utils\Strings;
 
 /**
+ * @method mixed onMatch(static, Nette\Application\Request $request)
+ * 
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
@@ -68,7 +70,6 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * @param mixed  $data
 	 * @param string $presenter
 	 * @param array  $data
-	 * @return void
 	 */
 	public function __construct($path, $presenter = NULL, array $data = [])
 	{
@@ -148,26 +149,6 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 
 	/**
-	 * @param array $defaults
-	 * @return void
-	 */
-	private function setDefaults(array $defaults)
-	{
-		$this->defaults = $defaults;
-	}
-
-
-	/**
-	 * @param  string $p
-	 * @return string
-	 */
-	private function getRequirement($p)
-	{
-		return isset($this->requirements[$p]) ? $this->requirements[$p] : '[\s]+';
-	}
-
-
-	/**
 	 * @param  string $string
 	 * @return string
 	 */
@@ -183,13 +164,13 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 */
 	public function getPlacehodlerParameters()
 	{
-		if ($this->placeholder_order) {
+		if (!empty($this->placeholder_order)) {
 			return array_filter($this->placeholder_order);
 		}
 
 		$return = [];
 
-		$mask = preg_replace_callback('/<(\w+)>/', function($item) use (&$return) {
+		preg_replace_callback('/<(\w+)>/', function($item) use (&$return) {
 			$return[] = end($item);
 		}, $this->path);
 
@@ -289,7 +270,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * Maps HTTP request to a Request object.
 	 * @return Request|NULL
 	 */
-	function match(Nette\Http\IRequest $httpRequest)
+	public function match(Nette\Http\IRequest $httpRequest)
 	{
 		$url = $httpRequest->getUrl();
 
@@ -310,7 +291,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 				return $item[0];
 			}
 
-			list(, , $placeholder) = $item;
+			list(,, $placeholder) = $item;
 
 			$parameter = isset($parameters[$placeholder]) ? $parameters[$placeholder] : [];
 
@@ -395,7 +376,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * Constructs absolute URL from Request object.
 	 * @return string|NULL
 	 */
-	function constructUrl(Request $request, Nette\Http\Url $url)
+	public function constructUrl(Request $request, Nette\Http\Url $url)
 	{
 		if ($this->presenter != $request->getPresenterName()) {
 			return NULL;
