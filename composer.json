@@ -30,6 +30,7 @@
 		"nette/application"    : "~2.3.0",
 		"nette/di"             : "~2.3.0",
 		"nette/reflection"     : "~2.3.0",
+		"doctrine/cache"       : "~1.6.0",
 		"doctrine/annotations" : "~1.2.0"
 	},
 	"require-dev": {
