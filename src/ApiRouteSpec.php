@@ -66,6 +66,11 @@ abstract class ApiRouteSpec extends Nette\Object
 	 */
 	protected $tags = [];
 
+	/**
+	 * @var array
+	 */
+	protected $response_codes = [];
+
 
 	/**
 	 * @param array $data
@@ -73,7 +78,7 @@ abstract class ApiRouteSpec extends Nette\Object
 	public function __construct(array $data)
 	{
 		foreach ($data as $key => $value) {
-			$method = 'set' . ucfirst($key);
+			$method = 'set' . str_replace('_', '', ucwords($key, '_'));
 
 			if (!method_exists($this, $method)) {
 				throw new ApiRouteWrongPropertyException(
@@ -292,6 +297,25 @@ abstract class ApiRouteSpec extends Nette\Object
 		}
 
 		return $return;
+	}
+
+
+	/**
+	 * @param array $response_codes
+	 * @return void
+	 */
+	public function setResponseCodes(array $response_codes)
+	{
+		$this->response_codes = $response_codes;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getResponseCodes()
+	{
+		return $this->response_codes;
 	}
 
 }
