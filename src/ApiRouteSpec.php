@@ -25,7 +25,7 @@ abstract class ApiRouteSpec extends Nette\Object
 	protected $path = '/';
 
 	/**
-	 * @Enum({"CREATE", "READ", "UPDATE", "DELETE"})
+	 * @Enum({"CREATE", "READ", "UPDATE", "DELETE", "OPTIONS"})
 	 * @var string
 	 */
 	protected $method;

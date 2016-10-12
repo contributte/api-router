@@ -36,20 +36,22 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * @var array
 	 */
 	private $actions = [
-		'POST'   => FALSE,
-		'GET'    => FALSE,
-		'PUT'    => FALSE,
-		'DELETE' => FALSE
+		'POST'    => FALSE,
+		'GET'     => FALSE,
+		'PUT'     => FALSE,
+		'DELETE'  => FALSE,
+		'OPTIONS' => FALSE
 	];
 
 	/**
 	 * @var array
 	 */
 	private $default_actions = [
-		'POST'   => 'create',
-		'GET'    => 'read',
-		'PUT'    => 'update',
-		'DELETE' => 'delete'
+		'POST'    => 'create',
+		'GET'     => 'read',
+		'PUT'     => 'update',
+		'DELETE'  => 'delete',
+		'OPTIONS' => 'options'
 	];
 
 	/**
