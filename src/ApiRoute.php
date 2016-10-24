@@ -303,7 +303,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 		$url = $httpRequest->getUrl();
 
-		$path = '/' . preg_replace('/^' . str_replace('/', '\/', preg_quote($url->getBasePath())) . '/', '', $url->getPath());
+		$path = $url->getPath();
 
 		/**
 		 * Build path mask
