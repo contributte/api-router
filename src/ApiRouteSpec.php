@@ -71,6 +71,12 @@ abstract class ApiRouteSpec extends Nette\Object
 	 */
 	protected $response_codes = [];
 
+	/**
+	 * @Enum({TRUE, FALSE})
+	 * @var bool
+	 */
+	protected $disable = FALSE;
+
 
 	/**
 	 * @param array $data
@@ -316,6 +322,24 @@ abstract class ApiRouteSpec extends Nette\Object
 	public function getResponseCodes()
 	{
 		return $this->response_codes;
+	}
+
+
+	/**
+	 * @param bool $disable
+	 */
+	public function setDisable($disable)
+	{
+		$this->disable = (bool) $disable;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function getDisable()
+	{
+		return $this->disable;
 	}
 
 }
