@@ -31,7 +31,7 @@
 		"nette/di"             : "^2.3|^2.4",
 		"nette/reflection"     : "^2.3|^2.4",
 		"doctrine/cache"       : "~1.6.0",
-		"doctrine/annotations" : "~1.2.0"
+		"doctrine/annotations" : "^1.2.0"
 	},
 	"require-dev": {
 		"nette/tester"    : "~1.6.1",
