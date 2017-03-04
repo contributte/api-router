@@ -326,6 +326,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 			$regex = isset($parameter['requirement']) ? $parameter['requirement'] : '\w+';
 			$has_default = array_key_exists('default', $parameter);
+			$regex = preg_replace('~\(~', '(?:', $regex);
 
 			if ($has_default) {
 				$order[] = $placeholder;
