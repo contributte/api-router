@@ -40,7 +40,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		'GET'     => FALSE,
 		'PUT'     => FALSE,
 		'DELETE'  => FALSE,
-		'OPTIONS' => FALSE
+		'OPTIONS' => FALSE,
+		'PATCH'   => FALSE
 	];
 
 	/**
@@ -51,7 +52,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		'GET'     => 'read',
 		'PUT'     => 'update',
 		'DELETE'  => 'delete',
-		'OPTIONS' => 'options'
+		'OPTIONS' => 'options',
+		'PATCH'   => 'patch'
 	];
 
 	/**
