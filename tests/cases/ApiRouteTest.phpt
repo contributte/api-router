@@ -20,7 +20,7 @@ final class ApiRouteTest extends TestCase
 	{
 		$route = new ApiRoute('/u', 'U');
 
-		Assert::same(['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], $route->getMethods());
+		Assert::same(['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], $route->getMethods());
 
 		$route = new ApiRoute('/u', 'U', [
 			'methods' => ['POST' => 'create']
