@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
  * @author      Pavel Janda <me@paveljanda.com>
@@ -8,14 +10,14 @@
 
 namespace Ublaboo\ApiRouter\DI;
 
-use Ublaboo\ApiRouter\ApiRoute;
-use Nette\Reflection\ClassType;
-use Nette;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Cache\FilesystemCache;
+use Nette;
+use Nette\Reflection\ClassType;
+use Ublaboo\ApiRouter\ApiRoute;
 
 class ApiRouterExtension extends Nette\DI\CompilerExtension
 {
@@ -24,7 +26,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	 * @var array
 	 */
 	private $defaults = [
-		'ignoreAnnotation' => []
+		'ignoreAnnotation' => [],
 	];
 
 	/**
@@ -124,7 +126,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	 * @param  array $routes
 	 * @return void
 	 */
-	private function findRoutesInPresenter($presenter, & $routes)
+	private function findRoutesInPresenter($presenter, &$routes)
 	{
 		$r = ClassType::from($presenter);
 
@@ -164,7 +166,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	 * @param  ApiRoute          $route
 	 * @return void
 	 */
-	private function findPresenterMethodRoute(\ReflectionMethod $method_reflection, & $routes, ApiRoute $route)
+	private function findPresenterMethodRoute(\ReflectionMethod $method_reflection, &$routes, ApiRoute $route)
 	{
 		$action_route = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
 
@@ -193,7 +195,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		$action_route->setPriority($action_route->getPriority() ?: $route->getPriority());
 		$action_route->setFormat($action_route->getFormat() ?: $route->getFormat());
 		$action_route->setSection($action_route->getSection() ?: $route->getSection());
-		$action_route->setAction($action, $action_route->getMethod() ?: NULL);
+		$action_route->setAction($action, $action_route->getMethod() ?: null);
 
 		$routes[$route->getPriority()][] = $action_route;
 	}
@@ -230,5 +232,4 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 
 		return (array) $config;
 	}
-
 }

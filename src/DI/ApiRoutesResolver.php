@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
  * @author      Pavel Janda <me@paveljanda.com>
@@ -9,8 +11,8 @@
 namespace Ublaboo\ApiRouter\DI;
 
 use Nette;
-use Nette\Application\Routers\RouteList;
 use Nette\Application\IRouter;
+use Nette\Application\Routers\RouteList;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
 
 class ApiRoutesResolver extends Nette\Object
@@ -73,5 +75,4 @@ class ApiRoutesResolver extends Nette\Object
 
 		return $return;
 	}
-
 }

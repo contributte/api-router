@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
  * @author      Pavel Janda <me@paveljanda.com>
@@ -75,7 +77,7 @@ abstract class ApiRouteSpec extends Nette\Object
 	 * @Enum({TRUE, FALSE})
 	 * @var bool
 	 */
-	protected $disable = FALSE;
+	protected $disable = false;
 
 
 	/**
@@ -164,20 +166,20 @@ abstract class ApiRouteSpec extends Nette\Object
 	protected function setParameters(array $parameters)
 	{
 		foreach ($parameters as $key => $info) {
-			if (FALSE === strpos($this->getPath(), "<{$key}>")) {
+			if (strpos($this->getPath(), "<{$key}>") === false) {
 				throw new ApiRouteWrongPropertyException("Parameter <$key> is not present in the url mask");
 			}
 
 			foreach ($info as $info_key => $value) {
-				if (!in_array($info_key, $this->parameters_infos)) {
+				if (!in_array($info_key, $this->parameters_infos, true)) {
 					throw new ApiRouteWrongPropertyException(sprintf(
-						"You cat set only these description informations: [%s] - \"%s\" given",
+						'You cat set only these description informations: [%s] - "%s" given',
 						implode(', ', $this->parameters_infos),
 						$info_key
 					));
 				}
 
-				if (!is_scalar($value) && !is_null($value)) {
+				if (!is_scalar($value) && $value !== null) {
 					throw new ApiRouteWrongPropertyException(
 						"You cat set only scalar parameters informations (key [{$info_key}])"
 					);
@@ -341,6 +343,4 @@ abstract class ApiRouteSpec extends Nette\Object
 	{
 		return $this->disable;
 	}
-
 }
-
