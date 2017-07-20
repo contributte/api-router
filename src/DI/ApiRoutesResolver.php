@@ -10,21 +10,17 @@ declare(strict_types=1);
 
 namespace Ublaboo\ApiRouter\DI;
 
-use Nette;
 use Nette\Application\IRouter;
 use Nette\Application\Routers\RouteList;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
 
-class ApiRoutesResolver extends Nette\Object
+class ApiRoutesResolver
 {
 
 	/**
 	 * Place REST API routes at the beginnig of all routes
-	 * @param  IRouter $router
-	 * @param  array   $routes
-	 * @return void
 	 */
-	public function prepandRoutes(IRouter $router, array $routes)
+	public function prepandRoutes(IRouter $router, array $routes): void
 	{
 		if (empty($routes)) {
 			return;
@@ -55,11 +51,7 @@ class ApiRoutesResolver extends Nette\Object
 	}
 
 
-	/**
-	 * @param  IRouter $router
-	 * @return array
-	 */
-	public function findAndDestroyUserRoutes(IRouter $router)
+	public function findAndDestroyUserRoutes(IRouter $router): array
 	{
 		$keys = [];
 		$return = [];

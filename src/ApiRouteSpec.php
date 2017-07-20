@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace Ublaboo\ApiRouter;
 
-use Nette;
+use Doctrine\Common\Annotations\Annotation\Enum;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongPropertyException;
 
-abstract class ApiRouteSpec extends Nette\Object
+abstract class ApiRouteSpec
 {
 
 	/**
@@ -51,15 +51,15 @@ abstract class ApiRouteSpec extends Nette\Object
 	 * @Enum({"json", "xml"})
 	 * @var string
 	 */
-	protected $format;
+	protected $format = 'json';
 
 	/**
-	 * @var mixed
+	 * @var array|null
 	 */
 	protected $example;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 */
 	protected $section;
 
@@ -74,7 +74,7 @@ abstract class ApiRouteSpec extends Nette\Object
 	protected $response_codes = [];
 
 	/**
-	 * @Enum({TRUE, FALSE})
+	 * @Enum({true, false})
 	 * @var bool
 	 */
 	protected $disable = false;
@@ -99,30 +99,19 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
-	/**
-	 * @param string $description
-	 * @return void
-	 */
-	public function setDescription($description)
+	public function setDescription(string $description): void
 	{
 		$this->description = $description;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->description;
 	}
 
 
-	/**
-	 * @param string $path
-	 * @return void
-	 */
-	protected function setPath($path)
+	protected function setPath(string $path): void
 	{
 		if (!$path) {
 			throw new ApiRouteWrongPropertyException('ApiRoute path can not be empty');
@@ -132,38 +121,28 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getPath()
+	public function getPath(): string
 	{
 		return $this->path;
 	}
 
 
-	/**
-	 * @param string $method
-	 * @return void
-	 */
-	protected function setMethod($method)
+	protected function setMethod(string $method): void
 	{
 		$this->method = strtoupper($method);
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getMethod()
+	public function getMethod(): string
 	{
 		return $this->method;
 	}
 
 
 	/**
-	 * @param array $parameters
+	 * @throws ApiRouteWrongPropertyException
 	 */
-	protected function setParameters(array $parameters)
+	protected function setParameters(array $parameters): void
 	{
 		foreach ($parameters as $key => $info) {
 			if (strpos($this->getPath(), "<{$key}>") === false) {
@@ -191,105 +170,67 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getParameters()
+	public function getParameters(): array
 	{
 		return $this->parameters;
 	}
 
 
-	/**
-	 * @param int $priority
-	 * @return void
-	 */
-	public function setPriority($priority)
+	public function setPriority(int $priority): void
 	{
 		$this->priority = $priority;
 	}
 
 
-	/**
-	 * @return int
-	 */
-	public function getPriority()
+	public function getPriority(): int
 	{
 		return $this->priority;
 	}
 
 
-	/**
-	 * @param string $format
-	 * @return void
-	 */
-	public function setFormat($format)
+	public function setFormat(string $format): void
 	{
 		$this->format = $format;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getFormat()
+	public function getFormat(): string
 	{
 		return $this->format;
 	}
 
 
-	/**
-	 * @param mixed $example
-	 * @return void
-	 */
-	public function setExample($example)
+	public function setExample(?array $example): void
 	{
 		$this->example = $example;
 	}
 
 
-	/**
-	 * @return mixed
-	 */
-	public function getExample()
+	public function getExample(): ?array
 	{
 		return $this->example;
 	}
 
 
-	/**
-	 * @param string $section
-	 * @return void
-	 */
-	public function setSection($section)
+	public function setSection(?string $section): void
 	{
 		$this->section = $section;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getSection()
+	public function getSection(): ?string
 	{
 		return $this->section;
 	}
 
 
-	/**
-	 * @param array $tags
-	 * @return void
-	 */
-	public function setTags(array $tags)
+	public function setTags(array $tags): void
 	{
 		$this->tags = $tags;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getTags()
+	public function getTags(): array
 	{
 		$return = [];
 
@@ -308,38 +249,25 @@ abstract class ApiRouteSpec extends Nette\Object
 	}
 
 
-	/**
-	 * @param array $response_codes
-	 * @return void
-	 */
-	public function setResponseCodes(array $response_codes)
+	public function setResponseCodes(array $response_codes): void
 	{
 		$this->response_codes = $response_codes;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getResponseCodes()
+	public function getResponseCodes(): array
 	{
 		return $this->response_codes;
 	}
 
 
-	/**
-	 * @param bool $disable
-	 */
-	public function setDisable($disable)
+	public function setDisable(bool $disable): void
 	{
 		$this->disable = (bool) $disable;
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public function getDisable()
+	public function getDisable(): bool
 	{
 		return $this->disable;
 	}

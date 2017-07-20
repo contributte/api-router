@@ -13,6 +13,7 @@ namespace Ublaboo\ApiRouter;
 use Nette;
 use Nette\Application\IRouter;
 use Nette\Application\Request;
+use Nette\SmartObject;
 use Nette\Utils\Strings;
 
 /**
@@ -23,6 +24,7 @@ use Nette\Utils\Strings;
  */
 class ApiRoute extends ApiRouteSpec implements IRouter
 {
+	use SmartObject;
 
 	/**
 	 * @var callable[]
@@ -30,7 +32,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	public $onMatch;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 */
 	private $presenter;
 
@@ -72,12 +74,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	private $placeholder_order = [];
 
 
-	/**
-	 * @param mixed  $data
-	 * @param string $presenter
-	 * @param array  $data
-	 */
-	public function __construct($path, $presenter = null, array $data = [])
+	public function __construct($path, string $presenter = null, array $data = [])
 	{
 		/**
 		 * Interface for setting route via annotation or directly
@@ -117,31 +114,19 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @param string $presenter
-	 * @return void
-	 */
-	public function setPresenter($presenter)
+	public function setPresenter(?string $presenter): void
 	{
 		$this->presenter = $presenter;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getPresenter()
+	public function getPresenter(): ?string
 	{
 		return $this->presenter;
 	}
 
 
-	/**
-	 * @param string $action
-	 * @param string $method
-	 * @return void
-	 */
-	public function setAction($action, $method = null)
+	public function setAction(string $action, string $method = null): void
 	{
 		if ($method === null) {
 			$method = array_search($action, $this->default_actions, true);
@@ -155,11 +140,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @param  string $string
-	 * @return string
-	 */
-	private function prepareForMatch($string)
+	private function prepareForMatch(string $string): string
 	{
 		return sprintf('/%s/', str_replace('/', '\/', $string));
 	}
@@ -167,9 +148,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Get all parameters from url mask
-	 * @return array
 	 */
-	public function getPlacehodlerParameters()
+	public function getPlacehodlerParameters(): array
 	{
 		if (!empty($this->placeholder_order)) {
 			return array_filter($this->placeholder_order);
@@ -187,9 +167,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Get required parameters from url mask
-	 * @return array
 	 */
-	public function getRequiredParams()
+	public function getRequiredParams(): array
 	{
 		$regex = '/\[[^\[]+?\]/';
 		$path = $this->getPath();
@@ -208,11 +187,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @param  Nette\Http\IRequest $httpRequest
-	 * @return void
-	 */
-	public function resolveFormat(Nette\Http\IRequest $httpRequest)
+	public function resolveFormat(Nette\Http\IRequest $httpRequest): void
 	{
 		if ($this->getFormat()) {
 			return;
@@ -232,18 +207,12 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getFormatFull()
+	public function getFormatFull(): string
 	{
 		return $this->formats[$this->getFormat()];
 	}
 
 
-	/**
-	 * @param array $methods
-	 */
 	public function setMethods(array $methods)
 	{
 		foreach ($methods as $method => $action) {
@@ -260,20 +229,13 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getMethods()
+	public function getMethods(): array
 	{
 		return array_keys(array_filter($this->actions));
 	}
 
 
-	/**
-	 * @param  Nette\Http\IRequest $request
-	 * @return string
-	 */
-	public function resolveMethod(Nette\Http\IRequest $request)
+	public function resolveMethod(Nette\Http\IRequest $request): string
 	{
 		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
@@ -296,9 +258,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Maps HTTP request to a Request object.
-	 * @return Request|NULL
 	 */
-	public function match(Nette\Http\IRequest $httpRequest)
+	public function match(Nette\Http\IRequest $httpRequest): ?Request
 	{
 		/**
 		 * ApiRoute can be easily disabled
@@ -410,9 +371,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Constructs absolute URL from Request object.
-	 * @return string|NULL
 	 */
-	public function constructUrl(Request $request, Nette\Http\Url $url)
+	public function constructUrl(Request $request, Nette\Http\Url $url): ?string
 	{
 		if ($this->presenter != $request->getPresenterName()) {
 			return null;
