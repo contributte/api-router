@@ -154,6 +154,14 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 			$this->findPresenterMethodRoute($method_r, $routes, $route);
 		}
 
+		/**
+		 * Add ApiRouter annotated presenter route only if there are some remaining
+		 * methods without ApiRouter annotated presenter method
+		 */
+		if (!empty($route->getMethods())) {
+			$routes[$route->getPriority()][] = $route;
+		}
+
 		$routes[$route->getPriority()][] = $route;
 	}
 
