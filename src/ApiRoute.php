@@ -320,7 +320,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 */
 		$this->resolveFormat($httpRequest);
 		$method = $this->resolveMethod($httpRequest);
-		$action = $this->actions[$method];
+		$action = $this->actions[$method] ?? null;
 
 		if (!$action) {
 			return null;
