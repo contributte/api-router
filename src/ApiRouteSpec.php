@@ -11,9 +11,10 @@ namespace Ublaboo\ApiRouter;
 use Nette;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongPropertyException;
 
-abstract class ApiRouteSpec extends Nette\Object
+abstract class ApiRouteSpec
 {
-
+	use Nette\SmartObject;
+	
 	/**
 	 * @var string
 	 */

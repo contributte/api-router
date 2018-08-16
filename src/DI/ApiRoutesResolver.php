@@ -13,9 +13,9 @@ use Nette\Application\Routers\RouteList;
 use Nette\Application\IRouter;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
 
-class ApiRoutesResolver extends Nette\Object
+class ApiRoutesResolver
 {
-
+	use Nette\SmartObject;
 	/**
 	 * Place REST API routes at the beginnig of all routes
 	 * @param  IRouter $router
