@@ -13,6 +13,7 @@ namespace Ublaboo\ApiRouter\DI;
 use Nette\Application\IRouter;
 use Nette\Application\Routers\RouteList;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
+use Nette;
 
 class ApiRoutesResolver
 {
