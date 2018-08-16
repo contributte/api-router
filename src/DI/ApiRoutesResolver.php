@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
  * @author      Pavel Janda <me@paveljanda.com>
@@ -8,9 +10,8 @@
 
 namespace Ublaboo\ApiRouter\DI;
 
-use Nette;
-use Nette\Application\Routers\RouteList;
 use Nette\Application\IRouter;
+use Nette\Application\Routers\RouteList;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
 
 class ApiRoutesResolver
@@ -18,11 +19,8 @@ class ApiRoutesResolver
 	use Nette\SmartObject;
 	/**
 	 * Place REST API routes at the beginnig of all routes
-	 * @param  IRouter $router
-	 * @param  array   $routes
-	 * @return void
 	 */
-	public function prepandRoutes(IRouter $router, array $routes)
+	public function prepandRoutes(IRouter $router, array $routes): void
 	{
 		if (empty($routes)) {
 			return;
@@ -53,11 +51,7 @@ class ApiRoutesResolver
 	}
 
 
-	/**
-	 * @param  IRouter $router
-	 * @return array
-	 */
-	public function findAndDestroyUserRoutes(IRouter $router)
+	public function findAndDestroyUserRoutes(IRouter $router): array
 	{
 		$keys = [];
 		$return = [];
@@ -73,5 +67,4 @@ class ApiRoutesResolver
 
 		return $return;
 	}
-
 }

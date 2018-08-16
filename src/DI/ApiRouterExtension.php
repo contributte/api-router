@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
  * @author      Pavel Janda <me@paveljanda.com>
@@ -8,23 +10,26 @@
 
 namespace Ublaboo\ApiRouter\DI;
 
-use Ublaboo\ApiRouter\ApiRoute;
-use Nette\Reflection\ClassType;
-use Nette;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Cache\FilesystemCache;
+use Nette\DI\CompilerExtension;
+use Nette\DI\ContainerBuilder;
+use Nette\Reflection\ClassType;
+use Nette\Reflection\Method;
+use Ublaboo\ApiRouter\ApiRoute;
+use Ublaboo\ApiRouter\DI\ApiRoutesResolver;
 
-class ApiRouterExtension extends Nette\DI\CompilerExtension
+class ApiRouterExtension extends CompilerExtension
 {
 
 	/**
 	 * @var array
 	 */
 	private $defaults = [
-		'ignoreAnnotation' => []
+		'ignoreAnnotation' => [],
 	];
 
 	/**
@@ -33,10 +38,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	private $reader;
 
 
-	/**
-	 * @return void
-	 */
-	public function beforeCompile()
+	public function beforeCompile(): void
 	{
 		$config = $this->_getConfig();
 
@@ -49,18 +51,13 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		$routes = $this->findRoutes($builder);
 
 		$builder->addDefinition($this->prefix('resolver'))
-			->setClass('Ublaboo\ApiRouter\DI\ApiRoutesResolver')
+			->setClass(ApiRoutesResolver::class)
 			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes])
 			->addTag('run');
 	}
 
 
-	/**
-	 * [setupReaderAnnotations description]
-	 * @param  array $config
-	 * @return void
-	 */
-	private function setupReaderAnnotations($config)
+	private function setupReaderAnnotations(array $config): void
 	{
 		/**
 		 * Prepare AnnotationRegistry
@@ -77,11 +74,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	/**
-	 * @param  array $compiler_config
-	 * @return void
-	 */
-	private function setupReader($compiler_config)
+	private function setupReader(array $compiler_config): void
 	{
 		$cache_path = $compiler_config['parameters']['tempDir'] . '/cache/ApiRouter.Annotations';
 
@@ -96,11 +89,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	/**
-	 * @param  Nette\DI\ContainerBuilder $builder
-	 * @return array
-	 */
-	private function findRoutes(Nette\DI\ContainerBuilder $builder)
+	private function findRoutes(ContainerBuilder $builder): array
 	{
 		/**
 		 * Find all presenters and their routes
@@ -119,19 +108,14 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	/**
-	 * @param  string $presenter
-	 * @param  array $routes
-	 * @return void
-	 */
-	private function findRoutesInPresenter($presenter, & $routes)
+	private function findRoutesInPresenter(string $presenter, array &$routes): void
 	{
 		$r = ClassType::from($presenter);
 
 		$route = $this->reader->getClassAnnotation($r, ApiRoute::class);
 
 		if (!$route) {
-			return [];
+			return;
 		}
 
 		/**
@@ -161,18 +145,10 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		if (!empty($route->getMethods())) {
 			$routes[$route->getPriority()][] = $route;
 		}
-
-		$routes[$route->getPriority()][] = $route;
 	}
 
 
-	/**
-	 * @param  \ReflectionMethod $method_reflection
-	 * @param  array             $routes
-	 * @param  ApiRoute          $route
-	 * @return void
-	 */
-	private function findPresenterMethodRoute(\ReflectionMethod $method_reflection, & $routes, ApiRoute $route)
+	private function findPresenterMethodRoute(\ReflectionMethod $method_reflection, array &$routes, ApiRoute $route): void
 	{
 		$action_route = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
 
@@ -190,7 +166,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 			return;
 		}
 
-		if ($method_reflection instanceof Nette\Reflection\Method) {
+		if ($method_reflection instanceof Method) {
 			$action_route->setDescription($method_reflection->getAnnotation('description'));
 		}
 
@@ -201,17 +177,13 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 		$action_route->setPriority($action_route->getPriority() ?: $route->getPriority());
 		$action_route->setFormat($action_route->getFormat() ?: $route->getFormat());
 		$action_route->setSection($action_route->getSection() ?: $route->getSection());
-		$action_route->setAction($action, $action_route->getMethod() ?: NULL);
+		$action_route->setAction($action, $action_route->getMethod() ?: null);
 
 		$routes[$route->getPriority()][] = $action_route;
 	}
 
 
-	/**
-	 * @param  array $routes
-	 * @return array
-	 */
-	private function sortByPriority(array $routes)
+	private function sortByPriority(array $routes): array
 	{
 		$return = [];
 
@@ -225,10 +197,7 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	/**
-	 * @return array
-	 */
-	private function _getConfig()
+	private function _getConfig(): array
 	{
 		$config = $this->validateConfig($this->defaults, $this->config);
 
@@ -238,5 +207,4 @@ class ApiRouterExtension extends Nette\DI\CompilerExtension
 
 		return (array) $config;
 	}
-
 }

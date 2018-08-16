@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
  * @author      Pavel Janda <me@paveljanda.com>
@@ -8,9 +10,10 @@
 
 namespace Ublaboo\ApiRouter;
 
+use Nette;
 use Nette\Application\IRouter;
 use Nette\Application\Request;
-use Nette;
+use Nette\SmartObject;
 use Nette\Utils\Strings;
 
 /**
@@ -21,6 +24,7 @@ use Nette\Utils\Strings;
  */
 class ApiRoute extends ApiRouteSpec implements IRouter
 {
+	use SmartObject;
 
 	/**
 	 * @var callable[]
@@ -28,7 +32,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	public $onMatch;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 */
 	private $presenter;
 
@@ -36,24 +40,24 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 * @var array
 	 */
 	private $actions = [
-		'POST'    => FALSE,
-		'GET'     => FALSE,
-		'PUT'     => FALSE,
-		'DELETE'  => FALSE,
-		'OPTIONS' => FALSE,
-		'PATCH'   => FALSE
+		'POST' => false,
+		'GET' => false,
+		'PUT' => false,
+		'DELETE' => false,
+		'OPTIONS' => false,
+		'PATCH' => false,
 	];
 
 	/**
 	 * @var array
 	 */
 	private $default_actions = [
-		'POST'    => 'create',
-		'GET'     => 'read',
-		'PUT'     => 'update',
-		'DELETE'  => 'delete',
+		'POST' => 'create',
+		'GET' => 'read',
+		'PUT' => 'update',
+		'DELETE' => 'delete',
 		'OPTIONS' => 'options',
-		'PATCH'   => 'patch'
+		'PATCH' => 'patch',
 	];
 
 	/**
@@ -61,7 +65,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	 */
 	private $formats = [
 		'json' => 'application/json',
-		'xml'  => 'application/xml'
+		'xml' => 'application/xml',
 	];
 
 	/**
@@ -70,12 +74,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	private $placeholder_order = [];
 
 
-	/**
-	 * @param mixed  $data
-	 * @param string $presenter
-	 * @param array  $data
-	 */
-	public function __construct($path, $presenter = NULL, array $data = [])
+	public function __construct($path, string $presenter = null, array $data = [])
 	{
 		/**
 		 * Interface for setting route via annotation or directly
@@ -115,33 +114,22 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @param string $presenter
-	 * @return void
-	 */
-	public function setPresenter($presenter)
+	public function setPresenter(?string $presenter): void
 	{
 		$this->presenter = $presenter;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getPresenter()
+	public function getPresenter(): ?string
 	{
 		return $this->presenter;
 	}
 
 
-	/**
-	 * @param string $action
-	 * @param string $method
-	 * @return void
-	 */
-	public function setAction($action, $method = NULL) {
-		if (is_null($method)) {
-			$method = array_search($action, $this->default_actions);
+	public function setAction(string $action, string $method = null): void
+	{
+		if ($method === null) {
+			$method = array_search($action, $this->default_actions, true);
 		}
 
 		if (!isset($this->default_actions[$method])) {
@@ -152,11 +140,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @param  string $string
-	 * @return string
-	 */
-	private function prepareForMatch($string)
+	private function prepareForMatch(string $string): string
 	{
 		return sprintf('/%s/', str_replace('/', '\/', $string));
 	}
@@ -164,9 +148,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Get all parameters from url mask
-	 * @return array
 	 */
-	public function getPlacehodlerParameters()
+	public function getPlacehodlerParameters(): array
 	{
 		if (!empty($this->placeholder_order)) {
 			return array_filter($this->placeholder_order);
@@ -174,7 +157,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 		$return = [];
 
-		preg_replace_callback('/<(\w+)>/', function($item) use (&$return) {
+		preg_replace_callback('/<(\w+)>/', function ($item) use (&$return) {
 			$return[] = end($item);
 		}, $this->path);
 
@@ -184,9 +167,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Get required parameters from url mask
-	 * @return array
 	 */
-	public function getRequiredParams()
+	public function getRequiredParams(): array
 	{
 		$regex = '/\[[^\[]+?\]/';
 		$path = $this->getPath();
@@ -197,7 +179,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 		$required = [];
 
-		preg_replace_callback('/<(\w+)>/', function($item) use (&$required) {
+		preg_replace_callback('/<(\w+)>/', function ($item) use (&$required) {
 			$required[] = end($item);
 		}, $path);
 
@@ -205,11 +187,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @param  Nette\Http\IRequest $httpRequest
-	 * @return void
-	 */
-	public function resolveFormat(Nette\Http\IRequest $httpRequest)
+	public function resolveFormat(Nette\Http\IRequest $httpRequest): void
 	{
 		if ($this->getFormat()) {
 			return;
@@ -229,18 +207,12 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getFormatFull()
+	public function getFormatFull(): string
 	{
 		return $this->formats[$this->getFormat()];
 	}
 
 
-	/**
-	 * @param array $methods
-	 */
 	public function setMethods(array $methods)
 	{
 		foreach ($methods as $method => $action) {
@@ -257,20 +229,14 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getMethods()
+	public function getMethods(): array
 	{
 		return array_keys(array_filter($this->actions));
 	}
 
 
-	/**
-	 * @param  Nette\Http\IRequest $request
-	 * @return string
-	 */
-	public function resolveMethod(Nette\Http\IRequest $request) {
+	public function resolveMethod(Nette\Http\IRequest $request): string
+	{
 		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
 		}
@@ -292,15 +258,14 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Maps HTTP request to a Request object.
-	 * @return Request|NULL
 	 */
-	public function match(Nette\Http\IRequest $httpRequest)
+	public function match(Nette\Http\IRequest $httpRequest): ?Request
 	{
 		/**
 		 * ApiRoute can be easily disabled
 		 */
 		if ($this->disable) {
-			return NULL;
+			return null;
 		}
 
 		$url = $httpRequest->getUrl();
@@ -313,20 +278,20 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		$order = &$this->placeholder_order;
 		$parameters = $this->parameters;
 
-		$mask = preg_replace_callback('/(<(\w+)>)|\[|\]/', function($item) use (&$order, $parameters) {
+		$mask = preg_replace_callback('/(<(\w+)>)|\[|\]/', function ($item) use (&$order, $parameters) {
 			if ($item[0] == '[' || $item[0] == ']') {
 				if ($item[0] == '[') {
-					$order[] = NULL;
+					$order[] = null;
 				}
 
 				return $item[0];
 			}
 
-			list(,, $placeholder) = $item;
+			[, , $placeholder] = $item;
 
-			$parameter = isset($parameters[$placeholder]) ? $parameters[$placeholder] : [];
+			$parameter = $parameters[$placeholder] ?? [];
 
-			$regex = isset($parameter['requirement']) ? $parameter['requirement'] : '\w+';
+			$regex = $parameter['requirement'] ?? '\w+';
 			$has_default = array_key_exists('default', $parameter);
 			$regex = preg_replace('~\(~', '(?:', $regex);
 
@@ -347,7 +312,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 * Prepare paths for regex match (escape slashes)
 		 */
 		if (!preg_match_all($this->prepareForMatch($mask), $path, $matches)) {
-			return NULL;
+			return null;
 		}
 
 		/**
@@ -355,10 +320,10 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 */
 		$this->resolveFormat($httpRequest);
 		$method = $this->resolveMethod($httpRequest);
-		$action = $this->actions[$method];
+		$action = $this->actions[$method] ?? null;
 
 		if (!$action) {
-			return NULL;
+			return null;
 		}
 
 		/**
@@ -374,14 +339,14 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		array_shift($matches);
 
 		foreach ($this->placeholder_order as $key => $name) {
-			if (NULL !== $name && isset($matches[$key])) {
-				$params[$name] = reset($matches[$key]) ?: NULL;
+			if ($name !== null&& isset($matches[$key])) {
+				$params[$name] = reset($matches[$key]) ?: null;
 
 				/**
 				 * Required parameters
 				 */
-				if (empty($params[$name]) && in_array($name, $required_params)) {
-					return NULL;
+				if (empty($params[$name]) && in_array($name, $required_params, true)) {
+					return null;
 				}
 			}
 		}
@@ -406,12 +371,11 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 	/**
 	 * Constructs absolute URL from Request object.
-	 * @return string|NULL
 	 */
-	public function constructUrl(Request $request, Nette\Http\Url $url)
+	public function constructUrl(Request $request, Nette\Http\Url $url): ?string
 	{
 		if ($this->presenter != $request->getPresenterName()) {
-			return NULL;
+			return null;
 		}
 
 		$base_url = $url->getBaseUrl();
@@ -421,19 +385,19 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		unset($parameters['action']);
 		$path = ltrim($this->getPath(), '/');
 
-		if (FALSE === array_search($action, $this->actions)) {
-			return NULL;
+		if (array_search($action, $this->actions, true) === false) {
+			return null;
 		}
 
 		foreach ($parameters as $name => $value) {
-			if (strpos($path, "<{$name}>") !== FALSE && $value !== NULL) {
+			if (strpos($path, "<{$name}>") !== false && $value !== null) {
 				$path = str_replace("<{$name}>", $value, $path);
 
 				unset($parameters[$name]);
 			}
 		}
 
-		$path = preg_replace_callback('/\[.+?\]/', function($item) {
+		$path = preg_replace_callback('/\[.+?\]/', function ($item) {
 			if (strpos(end($item), '<')) {
 				return '';
 			}
@@ -445,7 +409,7 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 * There are still some required parameters in url mask
 		 */
 		if (preg_match('/<\w+>/', $path)) {
-			return NULL;
+			return null;
 		}
 
 		$path = str_replace(['[', ']'], '', $path);
@@ -454,5 +418,4 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 		return $base_url . $path . ($query ? '?' . $query : '');
 	}
-
 }

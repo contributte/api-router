@@ -3,7 +3,7 @@
 	"type": "library",
 	"description": "RESTful Router for your Apis in Nette Framework - created either directly or via annotation",
 	"keywords": ["rest", "api", "routes", "nette", "router", "restapi", "restrouter", "routing", "route"],
-	"homepage": "http://ublaboo.paveljanda.com/api-router",
+	"homepage": "https://ublaboo.org/api-router",
 	"license": ["MIT"],
 	"support": {
 		"issues": "https://github.com/ublaboo/api-router/issues"
@@ -35,8 +35,8 @@
 		"doctrine/annotations" : "^1.2.0"
 	},
 	"require-dev": {
-		"nette/tester"    : "~1.6.1",
-		"mockery/mockery" : "~0.9",
-		"tracy/tracy"     : "^2.3|^2.4"
+		"nette/tester": "~1.6.1",
+		"mockery/mockery": "~0.9",
+		"tracy/tracy": "^2.3"
 	}
 }
