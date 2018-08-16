@@ -12,10 +12,12 @@ namespace Ublaboo\ApiRouter;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
 use Ublaboo\ApiRouter\Exception\ApiRouteWrongPropertyException;
+use Nette;
 
 abstract class ApiRouteSpec
 {
-
+	use Nette\SmartObject;
+	
 	/**
 	 * @var string|null
 	 */
