@@ -11,18 +11,18 @@ declare(strict_types=1);
 namespace Ublaboo\ApiRouter;
 
 use Nette;
-use Nette\Application\IRouter;
 use Nette\Application\Request;
+use Nette\Routing\Router;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
 
 /**
  * @method mixed onMatch(static, Nette\Application\Request $request)
- * 
+ *
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class ApiRoute extends ApiRouteSpec implements IRouter
+class ApiRoute extends ApiRouteSpec implements Router
 {
 	use SmartObject;
 
@@ -241,7 +241,8 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
 		}
 
-		if ($method = Strings::upper($request->getQuery('__apiRouteMethod'))) {
+		if (!empty($request->getQuery('__apiRouteMethod'))) {
+			$method = Strings::upper($request->getQuery('__apiRouteMethod'));
 			if (isset($this->actions[$method])) {
 				return $method;
 			}
@@ -257,9 +258,9 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 
 
 	/**
-	 * Maps HTTP request to a Request object.
+	 * Maps HTTP request to an array.
 	 */
-	public function match(Nette\Http\IRequest $httpRequest): ?Request
+	public function match(Nette\Http\IRequest $httpRequest): ?array
 	{
 		/**
 		 * ApiRoute can be easily disabled
@@ -330,7 +331,6 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 		 * Basic params
 		 */
 		$params = $httpRequest->getQuery();
-		$params['action'] = $action;
 		$required_params = $this->getRequiredParams();
 
 		/**
@@ -351,38 +351,39 @@ class ApiRoute extends ApiRouteSpec implements IRouter
 			}
 		}
 
-		$request = new Request(
-			$this->presenter,
-			$method,
-			$params,
-			$httpRequest->getPost(),
-			$httpRequest->getFiles(),
-			[Request::SECURED => $httpRequest->isSecured()]
-		);
+		$xs = array_merge([
+			'presenter' => $this->presenter,
+			'action' => $action,
+			'method' => $method,
+			'post' => $httpRequest->getPost(),
+			'files' => $httpRequest->getFiles(),
+			Request::SECURED => $httpRequest->isSecured()
+		], $params);
 
 		/**
 		 * Trigger event - route matches
 		 */
-		$this->onMatch($this, $request);
+		$this->onMatch($this, $xs);
 
-		return $request;
+		return $xs;
 	}
 
 
 	/**
-	 * Constructs absolute URL from Request object.
+	 * Constructs absolute URL from array.
 	 */
-	public function constructUrl(Request $request, Nette\Http\Url $url): ?string
+	public function constructUrl(array $params, Nette\Http\UrlScript $url): ?string
 	{
-		if ($this->presenter != $request->getPresenterName()) {
+		if ($this->presenter != $params['presenter']) {
 			return null;
 		}
 
 		$base_url = $url->getBaseUrl();
 
-		$action = $request->getParameter('action');
-		$parameters = $request->getParameters();
-		unset($parameters['action']);
+		$action = $params['action'];
+		unset($params['presenter']);
+		unset($params['action']);
+		$parameters = $params;
 		$path = ltrim($this->getPath(), '/');
 
 		if (array_search($action, $this->actions, true) === false) {
