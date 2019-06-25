@@ -15,7 +15,6 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\FilesystemCache;
-use Nette;
 use Nette\Application\IPresenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
