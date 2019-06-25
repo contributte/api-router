@@ -18,11 +18,10 @@ use Doctrine\Common\Cache\FilesystemCache;
 use Nette\Application\IPresenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\Definition;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 use Ublaboo\ApiRouter\ApiRoute;
-use Ublaboo\ApiRouter\DI\ApiRoutesResolver;
-use Nette\DI\Definitions\Definition;
 
 class ApiRouterExtension extends CompilerExtension
 {
@@ -215,8 +214,8 @@ class ApiRouterExtension extends CompilerExtension
 	}
 
 	public function afterCompile(Nette\PhpGenerator\ClassType $class)
-    {
-        parent::afterCompile($class);
-        $class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
-    }
+	{
+		parent::afterCompile($class);
+		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
+	}
 }
