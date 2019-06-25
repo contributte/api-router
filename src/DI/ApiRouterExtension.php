@@ -17,7 +17,6 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\FilesystemCache;
 use Nette;
 use Nette\Application\IPresenter;
-use Nette\Application\UI\Presenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\Reflection\ClassType;
