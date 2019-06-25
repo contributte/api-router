@@ -19,6 +19,7 @@ use Nette\Application\IPresenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
+use Nette\PhpGenerator\ClassType as GClassType;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 use Ublaboo\ApiRouter\ApiRoute;
@@ -213,7 +214,7 @@ class ApiRouterExtension extends CompilerExtension
 		return (array) $config;
 	}
 
-	public function afterCompile(Nette\PhpGenerator\ClassType $class)
+	public function afterCompile(GClassType $class)
 	{
 		parent::afterCompile($class);
 		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
