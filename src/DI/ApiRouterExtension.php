@@ -15,12 +15,16 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\FilesystemCache;
+use Nette;
+use Nette\Application\IPresenter;
+use Nette\Application\UI\Presenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 use Ublaboo\ApiRouter\ApiRoute;
 use Ublaboo\ApiRouter\DI\ApiRoutesResolver;
+use Nette\DI\Definitions\Definition;
 
 class ApiRouterExtension extends CompilerExtension
 {
@@ -37,6 +41,11 @@ class ApiRouterExtension extends CompilerExtension
 	 */
 	private $reader;
 
+    /**
+     * @var Definition
+     */
+	private $definition;
+
 
 	public function beforeCompile(): void
 	{
@@ -50,10 +59,9 @@ class ApiRouterExtension extends CompilerExtension
 
 		$routes = $this->findRoutes($builder);
 
-		$builder->addDefinition($this->prefix('resolver'))
+		$this->definition = $builder->addDefinition($this->prefix('resolver'))
 			->setClass(ApiRoutesResolver::class)
-			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes])
-			->addTag('run');
+			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes]);
 	}
 
 
@@ -94,11 +102,11 @@ class ApiRouterExtension extends CompilerExtension
 		/**
 		 * Find all presenters and their routes
 		 */
-		$presenters = $builder->findByTag('nette.presenter');
+		$presentersDec = $builder->findByType(IPresenter::class);
 		$routes = [];
 
-		foreach ($presenters as $presenter) {
-			$this->findRoutesInPresenter($presenter, $routes);
+		foreach ($presentersDec as $presenterDec) {
+			$this->findRoutesInPresenter($presenterDec->getType(), $routes);
 		}
 
 		/**
@@ -207,4 +215,10 @@ class ApiRouterExtension extends CompilerExtension
 
 		return (array) $config;
 	}
+
+	public function afterCompile(Nette\PhpGenerator\ClassType $class)
+    {
+        parent::afterCompile($class);
+        $class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
+    }
 }
