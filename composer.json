@@ -38,5 +38,10 @@
 		"nette/tester": "~1.6.1",
 		"mockery/mockery": "~0.9",
 		"tracy/tracy": "^2.3"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.1.x-dev"
+		}
 	}
 }
