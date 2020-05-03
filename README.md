@@ -19,10 +19,7 @@ Ultra easy-to-use [`RabbitMQ`](https://www.rabbitmq.com/) implementation for [`N
 ## Documentation
 
 - [Installation](.docs/README.md#installation)
-	- [Usage](.docs/README.md#usage)
-		- [Using annotation](.docs/README.md#using-annotation)
-		- [Using Nette Router](.docs/README.md#using-nette-router)
-		- [Api documentation](.docs/README.md#api-documentation)
+- [Usage](.docs/README.md#usage)
 
 ## Versions
 
