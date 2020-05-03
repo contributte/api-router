@@ -143,5 +143,5 @@ class RouterFactory
 
 ### Api documentation
 
-There is another extension for Nette which works pretty well with ApiRouter: [https://github.com/contributte/api-docu](ApiDocu).
+There is another extension for Nette which works pretty well with ApiRouter: [ApiDocu](https://github.com/contributte/api-docu).
 ApiDocu generates awesome api documentation from your RESTful routes. It can also show you documentation in application runtime!
