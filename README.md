@@ -1,147 +1,49 @@
-[![Build Status](https://travis-ci.org/ublaboo/api-router.svg?branch=master)](https://travis-ci.org/ublaboo/api-router)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ublaboo/api-router/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ublaboo/api-router/?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/ublaboo/api-router/v/stable)](https://packagist.org/packages/ublaboo/api-router)
-[![License](https://poser.pugx.org/ublaboo/api-router/license)](https://packagist.org/packages/ublaboo/api-router)
-[![Total Downloads](https://poser.pugx.org/ublaboo/api-router/downloads)](https://packagist.org/packages/ublaboo/api-router)
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/ublaboo/help)
+# RabbitMQ
 
-# ApiRouter
+Ultra easy-to-use [`RabbitMQ`](https://www.rabbitmq.com/) implementation for [`Nette Framework`](https://github.com/nette/).
 
-RESTful Router for your Apis in Nette Framework - created either directly or via annotation
+[![Build Status](https://img.shields.io/travis/contributte/api-router.svg?style=flat-square)](https://travis-ci.org/contributte/api-router)
+[![Code coverage](https://img.shields.io/coveralls/contributte/api-router.svg?style=flat-square)](https://coveralls.io/r/contributte/api-router)
+[![Licence](https://img.shields.io/packagist/l/contributte/api-router.svg?style=flat-square)](https://packagist.org/packages/contributte/api-router)
+[![Downloads this Month](https://img.shields.io/packagist/dm/contributte/api-router.svg?style=flat-square)](https://packagist.org/packages/contributte/api-router)
+[![Downloads total](https://img.shields.io/packagist/dt/contributte/api-router.svg?style=flat-square)](https://packagist.org/packages/contributte/api-router)
+[![Latest stable](https://img.shields.io/packagist/v/contributte/api-router.svg?style=flat-square)](https://packagist.org/packages/contributte/api-router)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-## Installation
+![](https://github.com/contributte/api-router/blob/master/.docs/assets/console.png "Console")
 
-ApiRouter is available on composer:
+## Discussion / Help
 
-```
-composer require ublaboo/api-router
-```
+[![Join the chat](https://img.shields.io/gitter/room/contributte/contributte.svg?style=flat-square)](http://bit.ly/ctteg)
 
-## Usage
+## Documentation
 
-### Using annotation
+- [Installation](.docs/README.md#installation)
+	- [Usage](.docs/README.md#usage)
+		- [Using annotation](.docs/README.md#using-annotation)
+		- [Using Nette Router](.docs/README.md#using-nette-router)
+		- [Api documentation](.docs/README.md#api-documentation)
 
-```php
-namespace App\ResourcesModule\Presenters;
+## Versions
 
-use Nette;
-use Ublaboo\ApiRouter\ApiRoute;
+| State  | Version      | Branch   | Nette  | PHP     |
+|--------|--------------|----------|--------|---------|
+| stable | `^4.0.0`     | `master` | `3.0+` | `^7.1`  |
 
-/**
- * API for managing users
- * 
- * @ApiRoute(
- * 	"/api-router/api/users[/<id>]",
- * 	parameters={
- * 		"id"={
- * 			"requirement": "\d+",
- * 			"default": 10
- * 		}
- * 	},
- *  priority=1,
- *  presenter="Resources:Users"
- * )
- */
-class UsersPresenter extends Nette\Application\UI\Presenter
-{
+## Maintainers
 
-	/**
-	 * Get user detail
-	 * 
-	 * @ApiRoute(
-	 * 	"/api-router/api/users/<id>[/<foo>-<bar>]",
-	 * 	parameters={
-	 * 		"id"={
-	 * 			"requirement": "\d+"
-	 * 		}
-	 * 	},
-	 * 	method="GET",
-	 * 	}
-	 * )
-	 */
-	public function actionRead($id, $foo = NULL, $bar = NULL)
-	{
-		$this->sendJson(['id' => $id, 'foo' => $foo, 'bar' => $bar]);
-	}
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/paveljanda">
+            <img width="150" height="150" src="https://avatars0.githubusercontent.com/u/1488874?s=150&v=4">
+        </a>
+        </br>
+        <a href="https://github.com/paveljanda">Pavel Janda</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-	public function actionUpdate($id)
-	{
-		$this->sendJson(['id' => $id]);
-	}
-
-
-	public function actionDelete($id)
-	{
-		$this->sendJson(['id' => $id]);
-	}
-}
-```
-
-Now 3 routes will be created (well, 2, but the one accepts both PUT and DELETE method).
-
-If you don't want to create route with DELETE method, simply remove the `UsersPresenter::actionDelete()` method.
-
-### Using Nette Router
-
-```php
-namespace App;
-
-use Nette;
-use Nette\Application\Routers\RouteList;
-use Nette\Application\Routers\Route;
-use Ublaboo\ApiRouter\ApiRoute;
-
-class RouterFactory
-{
-
-	/**
-	 * @return Nette\Application\IRouter
-	 */
-	public function createRouter()
-	{
-		$router = new RouteList;
-
-		/**
-		 * Simple route with matching (only if methods below exist):
-		 * 	GET     => UsersPresenter::actionRead()
-		 * 	POST    => UsersPresenter::actionCreate()
-		 * 	PUT     => UsersPresenter::actionUpdate()
-		 * 	DELETE  => UsersPresenter::actionDelete()
-		 */
-		$router[] = new ApiRoute('/hello', 'Users');
-
-		/**
-		 * Custom matching:
-		 * 	GET  => UsersPresenter::actionSuperRead()
-		 * 	POST => UsersPresenter::actionCreate()
-		 */
-		$router[] = new ApiRoute('/hello', 'ApiRouter', [
-			'methods' => ['GET' => 'superRead', 'POST']
-		]);
-
-		$router[] = new ApiRoute('/api-router/api/users[/<id>]', 'Resources:Users', [
-			'parameters' => [
-				'id' => ['requirement' => '\d+', 'default' => 10]
-			],
-			'priority' => 1
-		]);
-
-		$router[] = new ApiRoute('/api-router/api/users/<id>[/<foo>-<bar>]', 'Resources:Users', [
-			'parameters' => [
-				'id' => ['requirement' => '\d+']
-			],
-			'priority' => 1
-		]);
-
-		$router[] = new Route('<presenter>/<action>', 'Homepage:default');
-
-		return $router;
-	}
-}
-```
-
-### Api documentation
-
-There is another extension for Nette which works pretty well with ApiRouter: [ApiDocu](https://github.com/contributte/api-docu).
-ApiDocu generates awesome api documentation from your RESTful routes. It can also show you documentation in application runtime!
+Thank you for testing, reporting and contributing.

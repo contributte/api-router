@@ -1,15 +1,15 @@
 <?php
 
-namespace Ublaboo\ApiDocu\Tests\Cases;
+namespace Contributte\ApiDocu\Tests\Cases;
 
 use Tester\TestCase;
 use Tester\Assert;
 use Mockery;
-use Ublaboo\ApiRouter\ApiRoute;
+use Contributte\ApiRouter\ApiRoute;
 use Nette\Application\Routers\RouteList;
 use Nette\Application\Routers\Route;
-use Ublaboo\ApiRouter\DI\ApiRoutesResolver;
-use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
+use Contributte\ApiRouter\DI\ApiRoutesResolver;
+use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
 
 require __DIR__ . '/../bootstrap.php';
 

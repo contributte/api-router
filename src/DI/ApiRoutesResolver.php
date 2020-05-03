@@ -2,17 +2,11 @@
 
 declare(strict_types=1);
 
-/**
- * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
- * @author      Pavel Janda <me@paveljanda.com>
- * @package     Ublaboo
- */
-
-namespace Ublaboo\ApiRouter\DI;
+namespace Contributte\ApiRouter\DI;
 
 use Nette\Application\IRouter;
 use Nette\Application\Routers\RouteList;
-use Ublaboo\ApiRouter\Exception\ApiRouteWrongRouterException;
+use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
 
 class ApiRoutesResolver
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Ublaboo\ApiDocu\Tests\Cases;
+namespace Contributte\ApiDocu\Tests\Cases;
 
 use Tester\TestCase,
 	Tester\Assert,
 	Mockery,
 	Nette,
-	Ublaboo\ApiRouter\ApiRoute,
+	Contributte\ApiRouter\ApiRoute,
 	Nette\Http\UrlScript,
 	Nette\Http\Request,
 	Nette\Application\Request as AppRq;

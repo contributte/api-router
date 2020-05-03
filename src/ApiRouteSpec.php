@@ -2,16 +2,10 @@
 
 declare(strict_types=1);
 
-/**
- * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
- * @author      Pavel Janda <me@paveljanda.com>
- * @package     Ublaboo
- */
-
-namespace Ublaboo\ApiRouter;
+namespace Contributte\ApiRouter;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
-use Ublaboo\ApiRouter\Exception\ApiRouteWrongPropertyException;
+use Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException;
 
 abstract class ApiRouteSpec
 {

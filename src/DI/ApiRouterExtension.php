@@ -2,13 +2,7 @@
 
 declare(strict_types=1);
 
-/**
- * @copyright   Copyright (c) 2016 ublaboo <ublaboo@paveljanda.com>
- * @author      Pavel Janda <me@paveljanda.com>
- * @package     Ublaboo
- */
-
-namespace Ublaboo\ApiRouter\DI;
+namespace Contributte\ApiRouter\DI;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -22,7 +16,7 @@ use Nette\DI\Definitions\Definition;
 use Nette\PhpGenerator\ClassType as GClassType;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
-use Ublaboo\ApiRouter\ApiRoute;
+use Contributte\ApiRouter\ApiRoute;
 
 class ApiRouterExtension extends CompilerExtension
 {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Ublaboo\ApiRouter\Exception;
+namespace Contributte\ApiRouter\Exception;
 
 class ApiRouteWrongRouterException extends \Exception
 {
