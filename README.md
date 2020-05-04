@@ -1,6 +1,6 @@
-# RabbitMQ
+# ApiRouter
 
-Ultra easy-to-use [`RabbitMQ`](https://www.rabbitmq.com/) implementation for [`Nette Framework`](https://github.com/nette/).
+RESTful Router for your Apis in Nette Framework - created either directly or via annotation
 
 [![Build Status](https://img.shields.io/travis/contributte/api-router.svg?style=flat-square)](https://travis-ci.org/contributte/api-router)
 [![Code coverage](https://img.shields.io/coveralls/contributte/api-router.svg?style=flat-square)](https://coveralls.io/r/contributte/api-router)
