@@ -7,7 +7,7 @@ RESTful Router for your Apis in Nette Framework - created either directly or via
 ApiRouter is available on composer:
 
 ```
-composer require contributte/api-router
+$ composer require contributte/api-router
 ```
 
 ## Usage
