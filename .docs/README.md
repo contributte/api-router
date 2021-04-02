@@ -1,6 +1,12 @@
-# ApiRouter
+# Contributte / ApiRouter
 
-RESTful Router for your Apis in Nette Framework - created either directly or via annotation
+## Content
+
+- [Installation](#installation)
+- [Usage](#usage)
+    + [Using annotation](#using-annotation)
+    + [Using Nette Router](#using-nette-router)
+    + [Api documentation](#api-documentation)
 
 ## Installation
 
