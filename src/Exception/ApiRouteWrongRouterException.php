@@ -1,8 +1,10 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\ApiRouter\Exception;
 
-class ApiRouteWrongRouterException extends \Exception
+use Exception;
+
+class ApiRouteWrongRouterException extends Exception
 {
+
 }

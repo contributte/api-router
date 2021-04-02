@@ -1,12 +1,12 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\ApiRouter\DI;
 
+use ArrayAccess;
+use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
 use Nette\Application\IRouter;
 use Nette\Application\Routers\RouteList;
-use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
+use Traversable;
 
 class ApiRoutesResolver
 {
@@ -20,7 +20,7 @@ class ApiRoutesResolver
 			return;
 		}
 
-		if (!($router instanceof \Traversable) || !($router instanceof \ArrayAccess)) {
+		if (!($router instanceof Traversable) || !($router instanceof ArrayAccess)) {
 			throw new ApiRouteWrongRouterException(sprintf(
 				'ApiRoutesResolver can not add ApiRoutes to your router. Use for example %s instead',
 				RouteList::class
@@ -61,4 +61,5 @@ class ApiRoutesResolver
 
 		return $return;
 	}
+
 }
