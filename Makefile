@@ -3,6 +3,12 @@
 install:
 	composer update
 
+cs:
+	vendor/bin/codesniffer src tests
+
+csf:
+	vendor/bin/codefixer src tests
+
 tests:
 	vendor/bin/tester -s -p php --colors 1 -C tests/cases
 

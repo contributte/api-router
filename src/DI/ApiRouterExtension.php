@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\ApiRouter\DI;
 
+use Contributte\ApiRouter\ApiRoute;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -16,28 +15,21 @@ use Nette\DI\Definitions\Definition;
 use Nette\PhpGenerator\ClassType as GClassType;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
-use Contributte\ApiRouter\ApiRoute;
+use ReflectionMethod;
 
 class ApiRouterExtension extends CompilerExtension
 {
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $defaults = [
 		'ignoreAnnotation' => [],
 	];
 
-	/**
-	 * @var Reader
-	 */
+	/** @var Reader */
 	private $reader;
 
-    /**
-     * @var Definition
-     */
+	/** @var Definition */
 	private $definition;
-
 
 	public function beforeCompile(): void
 	{
@@ -82,7 +74,7 @@ class ApiRouterExtension extends CompilerExtension
 		 * Prepare AnnotationReader - use cached values
 		 */
 		$this->reader = new CachedReader(
-			new AnnotationReader,
+			new AnnotationReader(),
 			new FilesystemCache($cache_path),
 			$compiler_config['parameters']['debugMode']
 		);
@@ -148,7 +140,7 @@ class ApiRouterExtension extends CompilerExtension
 	}
 
 
-	private function findPresenterMethodRoute(\ReflectionMethod $method_reflection, array &$routes, ApiRoute $route): void
+	private function findPresenterMethodRoute(ReflectionMethod $method_reflection, array &$routes, ApiRoute $route): void
 	{
 		$action_route = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
 
@@ -213,4 +205,5 @@ class ApiRouterExtension extends CompilerExtension
 		parent::afterCompile($class);
 		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
 	}
+
 }

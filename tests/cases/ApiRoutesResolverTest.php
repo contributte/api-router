@@ -1,15 +1,15 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Contributte\ApiDocu\Tests\Cases;
+namespace Tests\Cases;
 
-use Tester\TestCase;
-use Tester\Assert;
-use Mockery;
 use Contributte\ApiRouter\ApiRoute;
-use Nette\Application\Routers\RouteList;
-use Nette\Application\Routers\Route;
 use Contributte\ApiRouter\DI\ApiRoutesResolver;
 use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
+use Nette\Application\Routers\Route;
+use Nette\Application\Routers\RouteList;
+use Tester\Assert;
+use Tester\TestCase;
+use Throwable;
 
 require __DIR__ . '/../bootstrap.php';
 
@@ -18,13 +18,13 @@ final class ApiRoutesResolverTest extends TestCase
 
 	public function testRouteList()
 	{
-		$router = new RouteList;
+		$router = new RouteList();
 
 		$router[] = new Route('/a', 'Users:');
 
 		$api_routes = [new ApiRoute('/u', 'Users')];
 
-		$resolver = new ApiRoutesResolver;
+		$resolver = new ApiRoutesResolver();
 
 		$resolver->prepandRoutes($router, $api_routes);
 
@@ -45,7 +45,7 @@ final class ApiRoutesResolverTest extends TestCase
 
 		$api_routes = [new ApiRoute('/u', 'Users')];
 
-		$resolver = new ApiRoutesResolver;
+		$resolver = new ApiRoutesResolver();
 
 		try {
 			$resolver->prepandRoutes($router, $api_routes);
@@ -53,8 +53,8 @@ final class ApiRoutesResolverTest extends TestCase
 			/**
 			 * This point can not be reached
 			 */
-			Assert::false(TRUE);
-		} catch (\Exception $e) {
+			Assert::false(true);
+		} catch (Throwable $e) {
 			Assert::true($e instanceof ApiRouteWrongRouterException);
 		}
 	}
@@ -62,5 +62,5 @@ final class ApiRoutesResolverTest extends TestCase
 }
 
 
-$test_case = new ApiRoutesResolverTest;
+$test_case = new ApiRoutesResolverTest();
 $test_case->run();
