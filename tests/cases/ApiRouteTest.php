@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Cases;
 
@@ -14,7 +16,7 @@ require __DIR__ . '/../bootstrap.php';
 final class ApiRouteTest extends TestCase
 {
 
-	public function testActionsMethods()
+	public function testActionsMethods(): void
 	{
 		$route = new ApiRoute('/u', 'U');
 
@@ -36,7 +38,7 @@ final class ApiRouteTest extends TestCase
 	}
 
 
-	public function testPlacehodlerParameters()
+	public function testPlacehodlerParameters(): void
 	{
 		$route = new ApiRoute('/u/<id>[/<l>-<r>/<aa>]/<a>', 'U');
 
@@ -45,7 +47,7 @@ final class ApiRouteTest extends TestCase
 	}
 
 
-	public function testResolveMethod()
+	public function testResolveMethod(): void
 	{
 		$headers = null;
 		$method = 'GET';
@@ -75,7 +77,7 @@ final class ApiRouteTest extends TestCase
 	}
 
 
-	public function testMatchMethods()
+	public function testMatchMethods(): void
 	{
 		$route = new ApiRoute('/users', 'U', ['methods' => ['POST' => 'create']]);
 		$u = new UrlScript('http://foo.com/users');
@@ -91,7 +93,7 @@ final class ApiRouteTest extends TestCase
 	}
 
 
-	public function testMatchUrl()
+	public function testMatchUrl(): void
 	{
 		$route = new ApiRoute('/users/', 'U');
 		$u = new UrlScript('http://foo.com/users');
@@ -119,7 +121,7 @@ final class ApiRouteTest extends TestCase
 	}
 
 
-	public function testMatchParameters()
+	public function testMatchParameters(): void
 	{
 		$route = new ApiRoute('/users/<id>', 'U');
 		$u = new UrlScript('http://foo.com/users');
@@ -254,7 +256,7 @@ final class ApiRouteTest extends TestCase
 	}
 
 
-	public function testConstructUrl()
+	public function testConstructUrl(): void
 	{
 		$r = (new AppRq('Reources:Users'))->toArray();
 		$u = new UrlScript('http://foo.com/users');

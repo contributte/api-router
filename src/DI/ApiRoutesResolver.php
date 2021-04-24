@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Contributte\ApiRouter\DI;
 
@@ -16,7 +18,7 @@ class ApiRoutesResolver
 	 */
 	public function prepandRoutes(IRouter $router, array $routes): void
 	{
-		if (empty($routes)) {
+		if (!$routes) {
 			return;
 		}
 

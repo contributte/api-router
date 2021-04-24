@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Cases;
 
@@ -16,7 +18,7 @@ require __DIR__ . '/../bootstrap.php';
 final class ApiRoutesResolverTest extends TestCase
 {
 
-	public function testRouteList()
+	public function testRouteList(): void
 	{
 		$router = new RouteList();
 
@@ -39,7 +41,7 @@ final class ApiRoutesResolverTest extends TestCase
 	}
 
 
-	public function testRoute()
+	public function testRoute(): void
 	{
 		$router = new Route('/a', 'Users:');
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Contributte\ApiRouter;
 
@@ -8,10 +10,14 @@ use Doctrine\Common\Annotations\Annotation\Enum;
 abstract class ApiRouteSpec
 {
 
-	/** @var string|null */
+	/**
+	 * @var string|null
+	 */
 	protected $description;
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $path = '/';
 
 	/**
@@ -20,13 +26,19 @@ abstract class ApiRouteSpec
 	 */
 	protected $method;
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	protected $parameters = [];
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	protected $parameters_infos = ['requirement', 'type', 'description', 'default'];
 
-	/** @var int */
+	/**
+	 * @var int
+	 */
 	protected $priority = 0;
 
 	/**
@@ -35,16 +47,24 @@ abstract class ApiRouteSpec
 	 */
 	protected $format = 'json';
 
-	/** @var array|null */
+	/**
+	 * @var array|null
+	 */
 	protected $example;
 
-	/** @var string|null */
+	/**
+	 * @var string|null
+	 */
 	protected $section;
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	protected $tags = [];
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	protected $response_codes = [];
 
 	/**
@@ -81,58 +101,14 @@ abstract class ApiRouteSpec
 		return $this->description;
 	}
 
-	protected function setPath(string $path): void
-	{
-		if (!$path) {
-			throw new ApiRouteWrongPropertyException('ApiRoute path can not be empty');
-		}
-
-		$this->path = (string) $path;
-	}
-
 	public function getPath(): string
 	{
 		return $this->path;
 	}
 
-	protected function setMethod(string $method): void
-	{
-		$this->method = strtoupper($method);
-	}
-
 	public function getMethod(): string
 	{
 		return $this->method;
-	}
-
-	/**
-	 * @throws ApiRouteWrongPropertyException
-	 */
-	protected function setParameters(array $parameters): void
-	{
-		foreach ($parameters as $key => $info) {
-			if (strpos($this->getPath(), '<' . $key . '>') === false) {
-				throw new ApiRouteWrongPropertyException('Parameter <' . $key . '> is not present in the url mask');
-			}
-
-			foreach ($info as $info_key => $value) {
-				if (!in_array($info_key, $this->parameters_infos, true)) {
-					throw new ApiRouteWrongPropertyException(sprintf(
-						'You cat set only these description informations: [%s] - "%s" given',
-						implode(', ', $this->parameters_infos),
-						$info_key
-					));
-				}
-
-				if (!is_scalar($value) && $value !== null) {
-					throw new ApiRouteWrongPropertyException(
-						'You cat set only scalar parameters informations (key [' . $info_key . '])'
-					);
-				}
-			}
-		}
-
-		$this->parameters = $parameters;
 	}
 
 	public function getParameters(): array
@@ -221,6 +197,50 @@ abstract class ApiRouteSpec
 	public function getDisable(): bool
 	{
 		return $this->disable;
+	}
+
+	protected function setPath(string $path): void
+	{
+		if (!$path) {
+			throw new ApiRouteWrongPropertyException('ApiRoute path can not be empty');
+		}
+
+		$this->path = (string) $path;
+	}
+
+	protected function setMethod(string $method): void
+	{
+		$this->method = strtoupper($method);
+	}
+
+	/**
+	 * @throws ApiRouteWrongPropertyException
+	 */
+	protected function setParameters(array $parameters): void
+	{
+		foreach ($parameters as $key => $info) {
+			if (strpos($this->getPath(), '<' . $key . '>') === false) {
+				throw new ApiRouteWrongPropertyException('Parameter <' . $key . '> is not present in the url mask');
+			}
+
+			foreach ($info as $info_key => $value) {
+				if (!in_array($info_key, $this->parameters_infos, true)) {
+					throw new ApiRouteWrongPropertyException(sprintf(
+						'You cat set only these description informations: [%s] - "%s" given',
+						implode(', ', $this->parameters_infos),
+						$info_key
+					));
+				}
+
+				if (!is_scalar($value) && $value !== null) {
+					throw new ApiRouteWrongPropertyException(
+						'You cat set only scalar parameters informations (key [' . $info_key . '])'
+					);
+				}
+			}
+		}
+
+		$this->parameters = $parameters;
 	}
 
 }

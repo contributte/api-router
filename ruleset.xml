@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <ruleset>
 	<!-- Contributte Coding Standard -->
-	<rule ref="./vendor/ninjify/coding-standard/contributte.xml"/>
+	<rule ref="./vendor/contributte/code-rules/paveljanda/ruleset.xml"/>
 
 	<!-- Specific rules -->
 	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
 		<properties>
-			<property name="rootNamespaces" type="array" value="
-				src=>Contributte\ApiRouter,
-				tests/cases=>Tests\Cases,
-				tests/fixtures=>Tests\Fixtures,
-			"/>
+			<property name="rootNamespaces" type="array">
+				<element key="src" value="Contributte\ApiRouter"/>
+				<element key="tests/cases" value="Tests\Cases"/>
+				<element key="tests/fixtures" value="Tests\Fixtures"/>
+			</property>
 		</properties>
 	</rule>
 
