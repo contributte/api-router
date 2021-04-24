@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Cases;
 
@@ -11,9 +13,9 @@ require __DIR__ . '/../bootstrap.php';
 final class ApiRouteSpecTest extends TestCase
 {
 
-	public function testConstructor()
+	public function testConstructor(): void
 	{
-		Assert::exception(function () {
+		Assert::exception(function (): void {
 			new ApiRoute('/users', 'Users', ['foo' => 'boo']);
 		},
 			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
@@ -21,21 +23,21 @@ final class ApiRouteSpecTest extends TestCase
 	}
 
 
-	public function testParameters()
+	public function testParameters(): void
 	{
-		Assert::exception(function () {
+		Assert::exception(function (): void {
 			new ApiRoute('/users', 'Users', ['parameters' => ['id' => ['type' => 'integer']]]);
 		},
 			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
 			'Parameter <id> is not present in the url mask');
 
-		Assert::exception(function () {
+		Assert::exception(function (): void {
 			new ApiRoute('/users/<id>', 'Users', ['parameters' => ['id' => ['foo' => 'integer']]]);
 		},
 			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
 			'You cat set only these description informations: [requirement, type, description, default] - "foo" given');
 
-		Assert::exception(function () {
+		Assert::exception(function (): void {
 			new ApiRoute('/users/<id>', 'Users', ['parameters' => ['id' => ['type' => []]]]);
 		},
 			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
@@ -43,7 +45,7 @@ final class ApiRouteSpecTest extends TestCase
 	}
 
 
-	public function testTags()
+	public function testTags(): void
 	{
 		$route = new ApiRoute('/u', 'Users', ['tags' => ['public', 'secured' => '#e74c3c']]);
 

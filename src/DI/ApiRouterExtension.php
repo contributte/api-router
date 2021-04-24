@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Contributte\ApiRouter\DI;
 
@@ -20,15 +22,21 @@ use ReflectionMethod;
 class ApiRouterExtension extends CompilerExtension
 {
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	private $defaults = [
 		'ignoreAnnotation' => [],
 	];
 
-	/** @var Reader */
+	/**
+	 * @var Reader
+	 */
 	private $reader;
 
-	/** @var Definition */
+	/**
+	 * @var Definition
+	 */
 	private $definition;
 
 	public function beforeCompile(): void
@@ -48,6 +56,13 @@ class ApiRouterExtension extends CompilerExtension
 			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes]);
 	}
 
+
+	public function afterCompile(GClassType $class): void
+	{
+		parent::afterCompile($class);
+
+		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
+	}
 
 	private function setupReaderAnnotations(array $config): void
 	{
@@ -113,7 +128,7 @@ class ApiRouterExtension extends CompilerExtension
 		/**
 		 * Add route to priority-half-sorted list
 		 */
-		if (empty($routes[$route->getPriority()])) {
+		if (!$routes[$route->getPriority()]) {
 			$routes[$route->getPriority()] = [];
 		}
 
@@ -134,13 +149,17 @@ class ApiRouterExtension extends CompilerExtension
 		 * Add ApiRouter annotated presenter route only if there are some remaining
 		 * methods without ApiRouter annotated presenter method
 		 */
-		if (!empty($route->getMethods())) {
+		if ($route->getMethods()) {
 			$routes[$route->getPriority()][] = $route;
 		}
 	}
 
 
-	private function findPresenterMethodRoute(ReflectionMethod $method_reflection, array &$routes, ApiRoute $route): void
+	private function findPresenterMethodRoute(
+		ReflectionMethod $method_reflection,
+		array &$routes,
+		ApiRoute $route
+	): void
 	{
 		$action_route = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
 
@@ -198,12 +217,6 @@ class ApiRouterExtension extends CompilerExtension
 		}
 
 		return (array) $config;
-	}
-
-	public function afterCompile(GClassType $class)
-	{
-		parent::afterCompile($class);
-		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
 	}
 
 }

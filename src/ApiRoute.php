@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Contributte\ApiRouter;
 
@@ -18,13 +20,19 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 	use SmartObject;
 
-	/** @var callable[] */
+	/**
+	 * @var callable[]
+	 */
 	public $onMatch;
 
-	/** @var string|null */
+	/**
+	 * @var string|null
+	 */
 	private $presenter;
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	private $actions = [
 		'POST' => false,
 		'GET' => false,
@@ -34,7 +42,9 @@ class ApiRoute extends ApiRouteSpec implements Router
 		'PATCH' => false,
 	];
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	private $default_actions = [
 		'POST' => 'create',
 		'GET' => 'read',
@@ -44,15 +54,22 @@ class ApiRoute extends ApiRouteSpec implements Router
 		'PATCH' => 'patch',
 	];
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	private $formats = [
 		'json' => 'application/json',
 		'xml' => 'application/xml',
 	];
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	private $placeholder_order = [];
 
+	/**
+	 * @param mixed $path
+	 */
 	public function __construct($path, ?string $presenter = null, array $data = [])
 	{
 		/**
@@ -62,7 +79,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 			$data['value'] = $path;
 			$data['presenter'] = $presenter;
 
-			if (empty($data['methods'])) {
+			if (!isset($data['methods']) || !$data['methods']) {
 				$this->actions = $this->default_actions;
 			} else {
 				foreach ($data['methods'] as $method => $action) {
@@ -115,23 +132,18 @@ class ApiRoute extends ApiRouteSpec implements Router
 		$this->actions[$method] = $action;
 	}
 
-	private function prepareForMatch(string $string): string
-	{
-		return sprintf('/%s/', str_replace('/', '\/', $string));
-	}
-
 	/**
 	 * Get all parameters from url mask
 	 */
 	public function getPlacehodlerParameters(): array
 	{
-		if (!empty($this->placeholder_order)) {
+		if ($this->placeholder_order) {
 			return array_filter($this->placeholder_order);
 		}
 
 		$return = [];
 
-		preg_replace_callback('/<(\w+)>/', function ($item) use (&$return) {
+		preg_replace_callback('/<(\w+)>/', function ($item) use (&$return): void {
 			$return[] = end($item);
 		}, $this->path);
 
@@ -152,7 +164,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 		$required = [];
 
-		preg_replace_callback('/<(\w+)>/', function ($item) use (&$required) {
+		preg_replace_callback('/<(\w+)>/', function ($item) use (&$required): void {
 			$required[] = end($item);
 		}, $path);
 
@@ -183,7 +195,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		return $this->formats[$this->getFormat()];
 	}
 
-	public function setMethods(array $methods)
+	public function setMethods(array $methods): void
 	{
 		foreach ($methods as $method => $action) {
 			if (is_string($method)) {
@@ -205,11 +217,11 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 	public function resolveMethod(Nette\Http\IRequest $request): string
 	{
-		if (!empty($request->getHeader('X-HTTP-Method-Override'))) {
+		if ($request->getHeader('X-HTTP-Method-Override')) {
 			return Strings::upper($request->getHeader('X-HTTP-Method-Override'));
 		}
 
-		if (!empty($request->getQuery('__apiRouteMethod'))) {
+		if ($request->getQuery('__apiRouteMethod')) {
 			$method = Strings::upper($request->getQuery('__apiRouteMethod'));
 			if (isset($this->actions[$method])) {
 				return $method;
@@ -312,7 +324,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 				/**
 				 * Required parameters
 				 */
-				if (empty($params[$name]) && in_array($name, $required_params, true)) {
+				if (!$params[$name] && in_array($name, $required_params, true)) {
 					return null;
 				}
 			}
@@ -384,6 +396,11 @@ class ApiRoute extends ApiRouteSpec implements Router
 		$query = http_build_query($parameters);
 
 		return $base_url . $path . ($query ? '?' . $query : '');
+	}
+
+	private function prepareForMatch(string $string): string
+	{
+		return sprintf('/%s/', str_replace('/', '\/', $string));
 	}
 
 }
