@@ -91,75 +91,90 @@ abstract class ApiRouteSpec
 		}
 	}
 
+
 	public function setDescription(?string $description): void
 	{
 		$this->description = $description;
 	}
+
 
 	public function getDescription(): ?string
 	{
 		return $this->description;
 	}
 
+
 	public function getPath(): string
 	{
 		return $this->path;
 	}
+
 
 	public function getMethod(): string
 	{
 		return $this->method;
 	}
 
+
 	public function getParameters(): array
 	{
 		return $this->parameters;
 	}
+
 
 	public function setPriority(int $priority): void
 	{
 		$this->priority = $priority;
 	}
 
+
 	public function getPriority(): int
 	{
 		return $this->priority;
 	}
+
 
 	public function setFormat(string $format): void
 	{
 		$this->format = $format;
 	}
 
+
 	public function getFormat(): string
 	{
 		return $this->format;
 	}
+
 
 	public function setExample(?array $example): void
 	{
 		$this->example = $example;
 	}
 
+
 	public function getExample(): ?array
 	{
 		return $this->example;
 	}
+
 
 	public function setSection(?string $section): void
 	{
 		$this->section = $section;
 	}
 
+
 	public function getSection(): ?string
 	{
 		return $this->section;
 	}
 
+
 	public function setTags(array $tags): void
 	{
 		$this->tags = $tags;
 	}
+
 
 	public function getTags(): array
 	{
@@ -179,25 +194,30 @@ abstract class ApiRouteSpec
 		return $return;
 	}
 
+
 	public function setResponseCodes(array $response_codes): void
 	{
 		$this->response_codes = $response_codes;
 	}
+
 
 	public function getResponseCodes(): array
 	{
 		return $this->response_codes;
 	}
 
+
 	public function setDisable(bool $disable): void
 	{
 		$this->disable = (bool) $disable;
 	}
 
+
 	public function getDisable(): bool
 	{
 		return $this->disable;
 	}
+
 
 	protected function setPath(string $path): void
 	{
@@ -208,10 +228,12 @@ abstract class ApiRouteSpec
 		$this->path = (string) $path;
 	}
 
+
 	protected function setMethod(string $method): void
 	{
 		$this->method = strtoupper($method);
 	}
+
 
 	/**
 	 * @throws ApiRouteWrongPropertyException
