@@ -79,7 +79,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 			$data['value'] = $path;
 			$data['presenter'] = $presenter;
 
-			if ($data['methods'] === []) {
+			if (!isset($data['methods']) || !$data['methods']) {
 				$this->actions = $this->default_actions;
 			} else {
 				foreach ($data['methods'] as $method => $action) {
@@ -128,7 +128,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 			$method = array_search($action, $this->default_actions, true);
 		}
 
-		if ($this->placeholder_order === []) {
+		if (!isset($this->default_actions[$method])) {
 			return;
 		}
 
