@@ -64,6 +64,7 @@ class ApiRouterExtension extends CompilerExtension
 		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
 	}
 
+
 	private function setupReaderAnnotations(array $config): void
 	{
 		/**
@@ -149,7 +150,7 @@ class ApiRouterExtension extends CompilerExtension
 		 * Add ApiRouter annotated presenter route only if there are some remaining
 		 * methods without ApiRouter annotated presenter method
 		 */
-		if ($route->getMethods()) {
+		if ($route->getMethods() !== []) {
 			$routes[$route->getPriority()][] = $route;
 		}
 	}

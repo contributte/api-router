@@ -109,15 +109,18 @@ class ApiRoute extends ApiRouteSpec implements Router
 		parent::__construct($data);
 	}
 
+
 	public function setPresenter(?string $presenter): void
 	{
 		$this->presenter = $presenter;
 	}
 
+
 	public function getPresenter(): ?string
 	{
 		return $this->presenter;
 	}
+
 
 	public function setAction(string $action, ?string $method = null): void
 	{
@@ -125,12 +128,13 @@ class ApiRoute extends ApiRouteSpec implements Router
 			$method = array_search($action, $this->default_actions, true);
 		}
 
-		if (!isset($this->default_actions[$method])) {
+		if ($this->placeholder_order === []) {
 			return;
 		}
 
 		$this->actions[$method] = $action;
 	}
+
 
 	/**
 	 * Get all parameters from url mask
@@ -149,6 +153,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 		return $return;
 	}
+
 
 	/**
 	 * Get required parameters from url mask
@@ -171,6 +176,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		return $required;
 	}
 
+
 	public function resolveFormat(Nette\Http\IRequest $httpRequest): void
 	{
 		if ($this->getFormat()) {
@@ -190,10 +196,12 @@ class ApiRoute extends ApiRouteSpec implements Router
 		$this->setFormat('json');
 	}
 
+
 	public function getFormatFull(): string
 	{
 		return $this->formats[$this->getFormat()];
 	}
+
 
 	public function setMethods(array $methods): void
 	{
@@ -210,10 +218,12 @@ class ApiRoute extends ApiRouteSpec implements Router
 		}
 	}
 
+
 	public function getMethods(): array
 	{
 		return array_keys(array_filter($this->actions));
 	}
+
 
 	public function resolveMethod(Nette\Http\IRequest $request): string
 	{
@@ -347,6 +357,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		return $xs;
 	}
 
+
 	/**
 	 * Constructs absolute URL from array.
 	 */
@@ -397,6 +408,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 		return $base_url . $path . ($query ? '?' . $query : '');
 	}
+
 
 	private function prepareForMatch(string $string): string
 	{
