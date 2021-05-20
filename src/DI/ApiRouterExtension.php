@@ -129,7 +129,7 @@ class ApiRouterExtension extends CompilerExtension
 		/**
 		 * Add route to priority-half-sorted list
 		 */
-		if (!$routes[$route->getPriority()]) {
+		if ($routes !== [] && !$routes[$route->getPriority()]) {
 			$routes[$route->getPriority()] = [];
 		}
 
