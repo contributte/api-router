@@ -52,7 +52,7 @@ class ApiRoutesResolver
 		$keys = [];
 		$return = [];
 
-		foreach ($router as $key => $route) {
+		foreach ($router->getRouters() as $key => $route) {
 			$return[] = $route;
 			$keys[] = $key;
 		}
