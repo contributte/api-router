@@ -31,7 +31,7 @@ final class ApiRoutesResolverTest extends TestCase
 
 		$order = [];
 
-		foreach ($router as $route) {
+		foreach ($router->getRouters() as $route) {
 			$order[] = $route;
 		}
 
