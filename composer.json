@@ -1,49 +1,61 @@
 {
-	"name": "contributte/api-router",
-	"type": "library",
-	"description": "RESTful Router for your Apis in Nette Framework - created either directly or via annotation",
-	"keywords": ["rest", "api", "routes", "nette", "router", "restapi", "restrouter", "routing", "route"],
-	"homepage": "https://github.com/contributte/api-router",
-	"license": ["MIT"],
-	"support": {
-		"issues": "https://github.com/contributte/api-router/issues"
-	},
-	"authors": [
-		{
-			"name": "Pavel Janda",
-			"homepage": "http://paveljanda.com"
-		}
-	],
-	"autoload": {
-		"psr-4": {
-			"Contributte\\ApiRouter\\": "src/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Contributte\\ApiRouter\\Tests\\": "tests"
-		}
-	},
-	"require": {
-		"php": ">= 7.1.0",
-		"nette/http" : "^3.0",
-		"nette/utils": "^3.0",
-		"nette/application": "^3.0",
-		"nette/di": "^3.0",
-		"nette/reflection": "^2.4",
-		"doctrine/cache": "^1.6",
-		"doctrine/annotations": "~1.3"
-	},
-	"require-dev": {
-		"nette/tester": "^2.3.2",
-		"mockery/mockery": "^1.3",
-		"ninjify/qa": "^0.12",
-		"tracy/tracy": "^2.6",
-		"contributte/code-rules": "^1.0"
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "2.1.x-dev"
-		}
-	}
+  "name": "contributte/api-router",
+  "type": "library",
+  "description": "RESTful Router for your Apis in Nette Framework - created either directly or via annotation",
+  "keywords": [
+    "rest",
+    "api",
+    "routes",
+    "nette",
+    "router",
+    "restapi",
+    "restrouter",
+    "routing",
+    "route"
+  ],
+  "homepage": "https://github.com/contributte/api-router",
+  "license": [
+    "MIT"
+  ],
+  "support": {
+    "issues": "https://github.com/contributte/api-router/issues"
+  },
+  "authors": [
+    {
+      "name": "Pavel Janda",
+      "homepage": "http://paveljanda.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Contributte\\ApiRouter\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Contributte\\ApiRouter\\Tests\\": "tests"
+    }
+  },
+  "require": {
+    "php": ">= 7.1.0",
+    "nette/http": "^3.0",
+    "nette/utils": "^3.0",
+    "nette/application": "^3.0",
+    "nette/di": "^3.0",
+    "nette/reflection": "^2.4",
+    "doctrine/cache": "^1.6",
+    "doctrine/annotations": "~1.3"
+  },
+  "require-dev": {
+    "nette/tester": "^2.3.2",
+    "mockery/mockery": "^1.3",
+    "ninjify/qa": "^0.12",
+    "tracy/tracy": "^2.6",
+    "contributte/code-rules": "^1.0"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.1.x-dev"
+    }
+  }
 }
