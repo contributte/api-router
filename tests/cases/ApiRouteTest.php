@@ -96,80 +96,108 @@ final class ApiRouteTest extends TestCase
 	public function testMatchUrl(): void
 	{
 		$route = new ApiRoute('/users/', 'U');
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::same(null, $route->match($r));
 
 		$route = new ApiRoute('/users', 'U');
-		$u = new UrlScript('http://foo.com/users/');
+		$u = new UrlScript('http://foo.com/users/', '/');
 		$r = new Request($u);
 
 		Assert::same(null, $route->match($r));
 
 		$route = new ApiRoute('/users[/]', 'U');
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $route->match($r));
 
 		$route = new ApiRoute('/users[/]', 'U');
-		$u = new UrlScript('http://foo.com/users/');
+		$u = new UrlScript('http://foo.com/users/', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $route->match($r));
 	}
 
 
+	public function testMatchUrlWithBasePath(): void
+	{
+		$route = new ApiRoute('/api/ping', 'U');
+		$u = new UrlScript('http://foo.com/api-project/api/ping', '/api-project/');
+		$r = new Request($u);
+
+		Assert::notSame(null, $route->match($r));
+
+		$route = new ApiRoute('/api/ping/', 'U');
+		$u = new UrlScript('http://foo.com/api-project/api/ping/', '/api-project/');
+		$r = new Request($u);
+
+		Assert::notSame(null, $route->match($r));
+
+		$route = new ApiRoute('/api/ping', 'U');
+		$u = new UrlScript('http://foo.com/api-project/api/fake', '/api-project/');
+		$r = new Request($u);
+
+		Assert::same(null, $route->match($r));
+
+		$route = new ApiRoute('/api/ping', 'U');
+		$u = new UrlScript('http://foo.com/api-project/fake', '/api-project/');
+		$r = new Request($u);
+
+		Assert::same(null, $route->match($r));
+	}
+
+
 	public function testMatchParameters(): void
 	{
 		$route = new ApiRoute('/users/<id>', 'U');
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::same(null, $route->match($r));
 
 		$route = new ApiRoute('/users/<id>', 'U');
-		$u = new UrlScript('http://foo.com/users/aaaa');
+		$u = new UrlScript('http://foo.com/users/aaaa', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
 		Assert::same('aaaa', $appRq['id']);
 
 		$route = new ApiRoute('/users[/<id>]', 'U');
-		$u = new UrlScript('http://foo.com/users/aaaa');
+		$u = new UrlScript('http://foo.com/users/aaaa', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
 		Assert::same('aaaa', $appRq['id']);
 
 		$route = new ApiRoute('/users[/<id>]', 'U');
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
 		Assert::same(null, $appRq['id']);
 
 		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::same(null, $route->match($r));
 
 		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
-		$u = new UrlScript('http://foo.com/users/a');
+		$u = new UrlScript('http://foo.com/users/a', '/');
 		$r = new Request($u);
 
 		Assert::same(null, $route->match($r));
 
 		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
-		$u = new UrlScript('http://foo.com/users/l-p');
+		$u = new UrlScript('http://foo.com/users/l-p', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $route->match($r));
 
 		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
-		$u = new UrlScript('http://foo.com/users/l-p/8/aa');
+		$u = new UrlScript('http://foo.com/users/l-p/8/aa', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -179,7 +207,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same('aa', $appRq['a']);
 
 		$route = new ApiRoute('/users/<l>-<p>[/<id>/<a>]', 'U');
-		$u = new UrlScript('http://foo.com/users/l-p/8/aa?bubla=a');
+		$u = new UrlScript('http://foo.com/users/l-p/8/aa?bubla=a', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -188,7 +216,7 @@ final class ApiRouteTest extends TestCase
 
 		$route = new ApiRoute('/users[/<id>][/<foo>][/<bar>]', 'U');
 
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -196,7 +224,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same(null, $appRq['foo']);
 		Assert::same(null, $appRq['bar']);
 
-		$u = new UrlScript('http://foo.com/users/1');
+		$u = new UrlScript('http://foo.com/users/1', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -204,7 +232,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same(null, $appRq['foo']);
 		Assert::same(null, $appRq['bar']);
 
-		$u = new UrlScript('http://foo.com/users/1/foo');
+		$u = new UrlScript('http://foo.com/users/1/foo', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -212,7 +240,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same('foo', $appRq['foo']);
 		Assert::same(null, $appRq['bar']);
 
-		$u = new UrlScript('http://foo.com/users/1/foo/bar');
+		$u = new UrlScript('http://foo.com/users/1/foo/bar', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -222,7 +250,7 @@ final class ApiRouteTest extends TestCase
 
 		$route = new ApiRoute('/users[/<id>[/<foo>[/<bar>]]]', 'U');
 
-		$u = new UrlScript('http://foo.com/users');
+		$u = new UrlScript('http://foo.com/users', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -230,7 +258,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same(null, $appRq['foo']);
 		Assert::same(null, $appRq['bar']);
 
-		$u = new UrlScript('http://foo.com/users/1');
+		$u = new UrlScript('http://foo.com/users/1', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -238,7 +266,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same(null, $appRq['foo']);
 		Assert::same(null, $appRq['bar']);
 
-		$u = new UrlScript('http://foo.com/users/1/foo');
+		$u = new UrlScript('http://foo.com/users/1/foo', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -246,7 +274,7 @@ final class ApiRouteTest extends TestCase
 		Assert::same('foo', $appRq['foo']);
 		Assert::same(null, $appRq['bar']);
 
-		$u = new UrlScript('http://foo.com/users/1/foo/bar');
+		$u = new UrlScript('http://foo.com/users/1/foo/bar', '/');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));
@@ -286,5 +314,4 @@ final class ApiRouteTest extends TestCase
 }
 
 
-$test_case = new ApiRouteTest();
-$test_case->run();
+(new ApiRouteTest())->run();
