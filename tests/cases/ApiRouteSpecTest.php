@@ -10,6 +10,9 @@ use Tester\TestCase;
 
 require __DIR__ . '/../bootstrap.php';
 
+/**
+ * @testCase
+ */
 final class ApiRouteSpecTest extends TestCase
 {
 
