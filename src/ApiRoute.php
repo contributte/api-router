@@ -268,9 +268,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		$path = substr($url->getPath(), strlen($basePath));
 
 		// Ensure start with /
-		if ($path === '' || $path[0] !== '/') {
-			$path = '/' . $path;
-		}
+		$path = '/' . ltrim($path, '/');
 
 		/**
 		 * Build path mask
