@@ -40,6 +40,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		'DELETE' => false,
 		'OPTIONS' => false,
 		'PATCH' => false,
+		'HEAD' => false,
 	];
 
 	/**
@@ -52,6 +53,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		'DELETE' => 'delete',
 		'OPTIONS' => 'options',
 		'PATCH' => 'patch',
+		'HEAD' => 'head',
 	];
 
 	/**
