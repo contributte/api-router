@@ -7,6 +7,7 @@
     + [Using annotation](#using-annotation)
     + [Using Nette Router](#using-nette-router)
     + [Api documentation](#api-documentation)
+- [Examples](#examples)
 
 ## Installation
 
@@ -18,17 +19,36 @@ composer require contributte/api-router
 
 ## Usage
 
+### Configure
+
+At first register compiler extension.
+
+```neon
+extensions:
+	apiRouter: Contributte\ApiRouter\DI\ApiRouterExtension
+```
+
+Don't forget to register your controller/presenter/endpoint classes.
+
+```neon
+services:
+	- App\Controllers\LoginController
+	- App\Controllers\PingController
+```
+
 ### Using annotation
+
+Example of used annotations. Don't forget to import `Contributte\ApiRouter\ApiRoute`, it's required by [doctrine/annotations](https://github.com/doctrine/annotations).
 
 ```php
 namespace App\ResourcesModule\Presenters;
 
-use Nette;
+use Nette\Application\UI\Presenter;
 use Contributte\ApiRouter\ApiRoute;
 
 /**
  * API for managing users
- * 
+ *
  * @ApiRoute(
  * 	"/api-router/api/users[/<id>]",
  * 	parameters={
@@ -41,12 +61,12 @@ use Contributte\ApiRouter\ApiRoute;
  *  presenter="Resources:Users"
  * )
  */
-class UsersPresenter extends Nette\Application\UI\Presenter
+class UsersController extends Presenter
 {
 
 	/**
 	 * Get user detail
-	 * 
+	 *
 	 * @ApiRoute(
 	 * 	"/api-router/api/users/<id>[/<foo>-<bar>]",
 	 * 	parameters={
@@ -54,8 +74,7 @@ class UsersPresenter extends Nette\Application\UI\Presenter
 	 * 			"requirement": "\d+"
 	 * 		}
 	 * 	},
-	 * 	method="GET",
-	 * 	}
+	 * 	method="GET"
 	 * )
 	 */
 	public function actionRead($id, $foo = NULL, $bar = NULL)
@@ -144,3 +163,9 @@ class RouterFactory
 
 There is another extension for Nette which works pretty well with ApiRouter: [ApiDocu](https://github.com/contributte/api-docu).
 ApiDocu generates awesome api documentation from your RESTful routes. It can also show you documentation in application runtime!
+
+## Examples
+
+We've made a few skeleton with preconfigured `contributte/api-router`.
+
+https://github.com/contributte/api-router-skeleton
