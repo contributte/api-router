@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\ApiRouter;
 
@@ -20,19 +18,13 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 	use SmartObject;
 
-	/**
-	 * @var callable[]
-	 */
+	/** @var callable[] */
 	public $onMatch;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $presenter;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $actions = [
 		'POST' => false,
 		'GET' => false,
@@ -43,9 +35,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		'HEAD' => false,
 	];
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $default_actions = [
 		'POST' => 'create',
 		'GET' => 'read',
@@ -56,17 +46,13 @@ class ApiRoute extends ApiRouteSpec implements Router
 		'HEAD' => 'head',
 	];
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $formats = [
 		'json' => 'application/json',
 		'xml' => 'application/xml',
 	];
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $placeholder_order = [];
 
 	/**
@@ -267,6 +253,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		if (strncmp($url->getPath(), $basePath, strlen($basePath)) !== 0) {
 			return null;
 		}
+
 		$path = substr($url->getPath(), strlen($basePath));
 
 		// Ensure start with /

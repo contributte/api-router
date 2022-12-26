@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\ApiRouter\DI;
 
@@ -22,21 +20,15 @@ use ReflectionMethod;
 class ApiRouterExtension extends CompilerExtension
 {
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $defaults = [
 		'ignoreAnnotation' => [],
 	];
 
-	/**
-	 * @var Reader
-	 */
+	/** @var Reader */
 	private $reader;
 
-	/**
-	 * @var Definition
-	 */
+	/** @var Definition */
 	private $definition;
 
 	public function beforeCompile(): void

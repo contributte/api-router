@@ -1,23 +1,16 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\ApiRouter;
 
 use Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException;
-use Doctrine\Common\Annotations\Annotation\Enum;
 
 abstract class ApiRouteSpec
 {
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	protected $description;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $path = '/';
 
 	/**
@@ -26,19 +19,13 @@ abstract class ApiRouteSpec
 	 */
 	protected $method;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	protected $parameters = [];
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	protected $parameters_infos = ['requirement', 'type', 'description', 'default'];
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $priority = 0;
 
 	/**
@@ -47,24 +34,16 @@ abstract class ApiRouteSpec
 	 */
 	protected $format = 'json';
 
-	/**
-	 * @var array|null
-	 */
+	/** @var array|null */
 	protected $example;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	protected $section;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	protected $tags = [];
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	protected $response_codes = [];
 
 	/**

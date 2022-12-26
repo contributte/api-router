@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Tests\Cases;
 
@@ -11,6 +9,7 @@ use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Tester\Assert;
 use Tester\TestCase;
+use Throwable;
 
 require __DIR__ . '/../bootstrap.php';
 
@@ -58,7 +57,7 @@ final class ApiRoutesResolverTest extends TestCase
 			 * This point can not be reached
 			 */
 			Assert::false(true);
-		} catch (\Throwable $e) {
+		} catch (Throwable $e) {
 			Assert::true($e instanceof ApiRouteWrongRouterException);
 		}
 	}
