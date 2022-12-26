@@ -33,7 +33,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Contributte\\ApiRouter\\Tests\\": "tests"
+			"Tests\\": "tests"
 		}
 	},
 	"require": {
