@@ -36,10 +36,9 @@
   "require": {
     "php": ">= 7.1.0",
     "nette/http": "^3.0",
-    "nette/utils": "^3.0",
     "nette/application": "^3.0",
     "nette/di": "^3.0",
-    "nette/reflection": "^2.4",
+    "contributte/utils": "^0.5.2",
     "doctrine/cache": "^1.6",
     "doctrine/annotations": "~1.3"
   },

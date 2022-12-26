@@ -3,6 +3,7 @@
 namespace Contributte\ApiRouter\DI;
 
 use Contributte\ApiRouter\ApiRoute;
+use Contributte\Utils\Annotations;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -13,8 +14,7 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
 use Nette\PhpGenerator\ClassType as GClassType;
-use Nette\Reflection\ClassType;
-use Nette\Reflection\Method;
+use ReflectionClass;
 use ReflectionMethod;
 
 class ApiRouterExtension extends CompilerExtension
@@ -110,7 +110,7 @@ class ApiRouterExtension extends CompilerExtension
 
 	private function findRoutesInPresenter(string $presenter, array &$routes): void
 	{
-		$r = ClassType::from($presenter);
+		$r = new ReflectionClass($presenter);
 
 		$route = $this->reader->getClassAnnotation($r, ApiRoute::class);
 
@@ -125,7 +125,7 @@ class ApiRouterExtension extends CompilerExtension
 			$routes[$route->getPriority()] = [];
 		}
 
-		$route->setDescription($r->getAnnotation('description'));
+		$route->setDescription(Annotations::getAnnotation($r, 'description'));
 
 		if (!$route->getPresenter()) {
 			$route->setPresenter(preg_replace('/Presenter$/', '', $r->getShortName()));
@@ -170,9 +170,7 @@ class ApiRouterExtension extends CompilerExtension
 			return;
 		}
 
-		if ($method_reflection instanceof Method) {
-			$action_route->setDescription($method_reflection->getAnnotation('description'));
-		}
+		$action_route->setDescription(Annotations::getAnnotation($method_reflection, 'description'));
 
 		/**
 		 * Action route will inherit presenter name, priority, etc from parent route
