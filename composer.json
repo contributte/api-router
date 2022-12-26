@@ -34,7 +34,7 @@
     }
   },
   "require": {
-    "php": ">=7.1",
+    "php": ">=8.0",
     "nette/http": "^3.2.0",
     "nette/application": "^3.1.0",
     "nette/di": "^3.1.0",
@@ -54,7 +54,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "4.3.x-dev"
+      "dev-master": "5.0.x-dev"
     }
   },
   "config": {
