@@ -21,7 +21,7 @@ final class ApiRouteTest extends TestCase
 	{
 		$route = new ApiRoute('/u', 'U');
 
-		Assert::same(['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], $route->getMethods());
+		Assert::same(['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'], $route->getMethods());
 
 		$route = new ApiRoute('/u', 'U', [
 			'methods' => ['POST' => 'create'],
@@ -38,7 +38,6 @@ final class ApiRouteTest extends TestCase
 		Assert::same(['POST', 'GET'], $route->getMethods());
 	}
 
-
 	public function testPlacehodlerParameters(): void
 	{
 		$route = new ApiRoute('/u/<id>[/<l>-<r>/<aa>]/<a>', 'U');
@@ -46,7 +45,6 @@ final class ApiRouteTest extends TestCase
 		Assert::same(['id', 'l', 'r', 'aa', 'a'], $route->getPlacehodlerParameters());
 		Assert::same(['id', 'a'], $route->getRequiredParams());
 	}
-
 
 	public function testResolveMethod(): void
 	{
@@ -77,7 +75,6 @@ final class ApiRouteTest extends TestCase
 		Assert::same('PUT', $route->resolveMethod($r));
 	}
 
-
 	public function testMatchMethods(): void
 	{
 		$route = new ApiRoute('/users', 'U', ['methods' => ['POST' => 'create']]);
@@ -92,7 +89,6 @@ final class ApiRouteTest extends TestCase
 
 		Assert::same(null, $route->match($r));
 	}
-
 
 	public function testMatchUrl(): void
 	{
@@ -148,7 +144,6 @@ final class ApiRouteTest extends TestCase
 
 		Assert::same(null, $route->match($r));
 	}
-
 
 	public function testMatchParameters(): void
 	{
@@ -284,7 +279,6 @@ final class ApiRouteTest extends TestCase
 		Assert::same('bar', $appRq['bar']);
 	}
 
-
 	public function testConstructUrl(): void
 	{
 		$r = (new AppRq('Reources:Users'))->toArray();
@@ -313,6 +307,5 @@ final class ApiRouteTest extends TestCase
 	}
 
 }
-
 
 (new ApiRouteTest())->run();

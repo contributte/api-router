@@ -3,6 +3,7 @@
 namespace Tests\Cases;
 
 use Contributte\ApiRouter\ApiRoute;
+use Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException;
 use Tester\Assert;
 use Tester\TestCase;
 
@@ -16,35 +17,41 @@ final class ApiRouteSpecTest extends TestCase
 
 	public function testConstructor(): void
 	{
-		Assert::exception(function (): void {
-			new ApiRoute('/users', 'Users', ['foo' => 'boo']);
-		},
-			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
-			'Unknown property "foo" on annotation "Contributte\ApiRouter\ApiRoute"');
+		Assert::exception(
+			function (): void {
+				new ApiRoute('/users', 'Users', ['foo' => 'boo']);
+			},
+			ApiRouteWrongPropertyException::class,
+			'Unknown property "foo" on annotation "Contributte\ApiRouter\ApiRoute"'
+		);
 	}
-
 
 	public function testParameters(): void
 	{
-		Assert::exception(function (): void {
-			new ApiRoute('/users', 'Users', ['parameters' => ['id' => ['type' => 'integer']]]);
-		},
-			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
-			'Parameter <id> is not present in the url mask');
+		Assert::exception(
+			function (): void {
+				new ApiRoute('/users', 'Users', ['parameters' => ['id' => ['type' => 'integer']]]);
+			},
+			ApiRouteWrongPropertyException::class,
+			'Parameter <id> is not present in the url mask'
+		);
 
-		Assert::exception(function (): void {
-			new ApiRoute('/users/<id>', 'Users', ['parameters' => ['id' => ['foo' => 'integer']]]);
-		},
-			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
-			'You cat set only these description informations: [requirement, type, description, default] - "foo" given');
+		Assert::exception(
+			function (): void {
+				new ApiRoute('/users/<id>', 'Users', ['parameters' => ['id' => ['foo' => 'integer']]]);
+			},
+			ApiRouteWrongPropertyException::class,
+			'You cat set only these description informations: [requirement, type, description, default] - "foo" given'
+		);
 
-		Assert::exception(function (): void {
-			new ApiRoute('/users/<id>', 'Users', ['parameters' => ['id' => ['type' => []]]]);
-		},
-			'Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException',
-			'You cat set only scalar parameters informations (key [type])');
+		Assert::exception(
+			function (): void {
+				new ApiRoute('/users/<id>', 'Users', ['parameters' => ['id' => ['type' => []]]]);
+			},
+			ApiRouteWrongPropertyException::class,
+			'You cat set only scalar parameters informations (key [type])'
+		);
 	}
-
 
 	public function testTags(): void
 	{
@@ -55,6 +62,4 @@ final class ApiRouteSpecTest extends TestCase
 
 }
 
-
-$test_case = new ApiRouteSpecTest();
-$test_case->run();
+(new ApiRouteSpecTest())->run();

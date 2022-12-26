@@ -64,6 +64,4 @@ final class ApiRoutesResolverTest extends TestCase
 
 }
 
-
-$test_case = new ApiRoutesResolverTest();
-$test_case->run();
+(new ApiRoutesResolverTest())->run();
