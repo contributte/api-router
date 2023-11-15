@@ -38,7 +38,7 @@
     "nette/http": "^3.2.0",
     "nette/application": "^3.1.0",
     "nette/di": "^3.1.0",
-    "contributte/utils": "^0.5.2",
+    "contributte/utils": "^0.5.2 || ^0.6.0",
     "doctrine/cache": "^1.13.0",
     "doctrine/annotations": "^1.14.0"
   },
