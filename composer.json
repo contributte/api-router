@@ -23,16 +23,6 @@
       "homepage": "http://paveljanda.com"
     }
   ],
-  "autoload": {
-    "psr-4": {
-      "Contributte\\ApiRouter\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests"
-    }
-  },
   "require": {
     "php": ">=8.0",
     "nette/http": "^3.2.0",
@@ -43,23 +33,33 @@
     "doctrine/annotations": "^1.14.0"
   },
   "require-dev": {
-    "nette/tester": "^2.3.2",
-    "mockery/mockery": "^1.3",
-    "ninjify/qa": "^0.12",
-    "tracy/tracy": "^2.6",
-    "phpstan/phpstan": "^1.9.4",
-    "phpstan/phpstan-deprecation-rules": "^1.1.0",
-    "phpstan/phpstan-nette": "^1.2.0",
-    "phpstan/phpstan-strict-rules": "^1.4.0"
+    "contributte/qa": "^0.4",
+    "contributte/tester": "^0.3",
+    "contributte/phpstan": "^0.1",
+    "mockery/mockery": "^1.6.6",
+    "tracy/tracy": "^2.10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Contributte\\ApiRouter\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   },
   "extra": {
     "branch-alias": {
       "dev-master": "5.0.x-dev"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   }
 }
