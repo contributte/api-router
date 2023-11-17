@@ -105,10 +105,7 @@ If you don't want to create route with DELETE method, simply remove the `UsersPr
 ```php
 namespace App;
 
-use Nette;
-use Nette\Application\Routers\RouteList;
-use Nette\Application\Routers\Route;
-use Contributte\ApiRouter\ApiRoute;
+use Contributte\ApiRouter\ApiRoute;use Nette;use Nette\Application\Routers\Route;use Nette\Application\Routers\RouteList;
 
 class RouterFactory
 {
@@ -135,22 +132,27 @@ class RouterFactory
 		 * 	POST => UsersPresenter::actionCreate()
 		 */
 		$router[] = new ApiRoute('/hello', 'ApiRouter', [
-			'methods' => ['GET' => 'superRead', 'POST']
+			'methods' => ['GET' => 'superRead', 'POST'],
 		]);
 
 		$router[] = new ApiRoute('/api-router/api/users[/<id>]', 'Resources:Users', [
 			'parameters' => [
-				'id' => ['requirement' => '\d+', 'default' => 10]
+				'id' => ['requirement' => '\d+', 'default' => 10],
 			],
-			'priority' => 1
+			'priority' => 1,
 		]);
 
 		$router[] = new ApiRoute('/api-router/api/users/<id>[/<foo>-<bar>]', 'Resources:Users', [
 			'parameters' => [
-				'id' => ['requirement' => '\d+']
+				'id' => ['requirement' => '\d+'],
 			],
-			'priority' => 1
+			'priority' => 1,
 		]);
+
+		# Disable basePath detection
+		$route = new ApiRoute('/api-router/api/users', 'Resources:Users');
+		$route->setAutoBasePath(false);
+		$router[] = $route;
 
 		$router[] = new Route('<presenter>/<action>', 'Homepage:default');
 
