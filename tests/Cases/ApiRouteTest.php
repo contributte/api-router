@@ -117,7 +117,6 @@ final class ApiRouteTest extends TestCase
 		Assert::notSame(null, $route->match($r));
 	}
 
-
 	public function testMatchUrlWithBasePath(): void
 	{
 		$route = new ApiRoute('/api/ping', 'U');
@@ -271,6 +270,17 @@ final class ApiRouteTest extends TestCase
 		Assert::same(null, $appRq['bar']);
 
 		$u = new UrlScript('http://foo.com/users/1/foo/bar', '/');
+		$r = new Request($u);
+
+		Assert::notSame(null, $appRq = $route->match($r));
+		Assert::same(1, (int) $appRq['id']);
+		Assert::same('foo', $appRq['foo']);
+		Assert::same('bar', $appRq['bar']);
+
+		$route = new ApiRoute('/users[/<id>[/<foo>[/<bar>]]]', 'U');
+		$route->setAutoBasePath(false);
+
+		$u = new UrlScript('http://foo.com/users/1/foo/bar');
 		$r = new Request($u);
 
 		Assert::notSame(null, $appRq = $route->match($r));

@@ -41,7 +41,6 @@ final class ApiRoutesResolverTest extends TestCase
 		Assert::true($order[1] instanceof Route);
 	}
 
-
 	public function testRoute(): void
 	{
 		$router = new Route('/a', 'Users:');

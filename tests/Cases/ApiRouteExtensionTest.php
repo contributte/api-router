@@ -20,10 +20,17 @@ require __DIR__ . '/../bootstrap.php';
 final class ApiRouteExtensionTest extends TestCase
 {
 
-	/** @var Container */
-	private $container;
+	private Container $container;
 
-	protected function setUp()
+	public function testRouter(): void
+	{
+		/** @var RouteList $router */
+		$router = $this->container->getByType(RouteList::class);
+
+		Assert::count(2, $router->getRouters());
+	}
+
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -45,14 +52,6 @@ final class ApiRouteExtensionTest extends TestCase
 
 		$this->container = new $class();
 		$this->container->initialize();
-	}
-
-	public function testRouter(): void
-	{
-		/** @var RouteList $router */
-		$router = $this->container->getByType(RouteList::class);
-
-		Assert::count(2, $router->getRouters());
 	}
 
 }

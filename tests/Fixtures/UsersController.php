@@ -32,17 +32,17 @@ class UsersController extends Presenter
 	 *    method="GET"
 	 * )
 	 */
-	public function actionRead($id, $foo = null, $bar = null)
+	public function actionRead(int $id, ?string $foo = null, ?string $bar = null): void
 	{
 		$this->sendJson(['id' => $id, 'foo' => $foo, 'bar' => $bar]);
 	}
 
-	public function actionUpdate($id)
+	public function actionUpdate(int $id): void
 	{
 		$this->sendJson(['id' => $id]);
 	}
 
-	public function actionDelete($id)
+	public function actionDelete(int $id): void
 	{
 		$this->sendJson(['id' => $id]);
 	}
