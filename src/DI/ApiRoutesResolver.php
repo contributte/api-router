@@ -4,8 +4,9 @@ namespace Contributte\ApiRouter\DI;
 
 use ArrayAccess;
 use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
-use Nette\Application\IRouter;
 use Nette\Application\Routers\RouteList;
+use Nette\Routing\Route;
+use Nette\Routing\Router;
 use Traversable;
 
 class ApiRoutesResolver
@@ -13,10 +14,12 @@ class ApiRoutesResolver
 
 	/**
 	 * Place REST API routes at the beginnig of all routes
+	 *
+	 * @param Route[] $routes
 	 */
-	public function prepandRoutes(IRouter $router, array $routes): void
+	public function prepandRoutes(Router $router, array $routes): void
 	{
-		if (!$routes) {
+		if ($routes === []) {
 			return;
 		}
 
@@ -27,7 +30,7 @@ class ApiRoutesResolver
 			));
 		}
 
-		$user_routes = $this->findAndDestroyUserRoutes($router);
+		$userRoutes = $this->findAndDestroyUserRoutes($router);
 
 		/**
 		 * Add ApiRoutes first
@@ -39,20 +42,24 @@ class ApiRoutesResolver
 		/**
 		 * User routes on second place
 		 */
-		foreach ($user_routes as $route) {
+		foreach ($userRoutes as $route) {
 			$router[] = $route;
 		}
 	}
 
-
-	public function findAndDestroyUserRoutes(IRouter $router): array
+	/**
+	 * @return array<int, Router>
+	 */
+	public function findAndDestroyUserRoutes(Router $router): array
 	{
 		$keys = [];
 		$return = [];
 
-		foreach ($router->getRouters() as $key => $route) {
-			$return[] = $route;
-			$keys[] = $key;
+		if ($router instanceof RouteList) {
+			foreach ($router->getRouters() as $key => $route) {
+				$return[] = $route;
+				$keys[] = $key;
+			}
 		}
 
 		foreach (array_reverse($keys) as $key) {

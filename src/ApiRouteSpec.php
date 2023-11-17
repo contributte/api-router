@@ -7,53 +7,40 @@ use Contributte\ApiRouter\Exception\ApiRouteWrongPropertyException;
 abstract class ApiRouteSpec
 {
 
-	/** @var string|null */
-	protected $description;
+	protected ?string $description = null;
 
-	/** @var string */
-	protected $path = '/';
+	protected string $path = '/';
 
-	/**
-	 * @var string
-	 * @Enum({"CREATE", "READ", "UPDATE", "DELETE", "OPTIONS"})
-	 */
-	protected $method;
+	/** @Enum({"CREATE", "READ", "UPDATE", "DELETE", "OPTIONS"}) */
+	protected ?string $method = null;
 
-	/** @var array */
-	protected $parameters = [];
+	/** @var array<string, scalar> */
+	protected array $parameters = [];
 
-	/** @var array */
-	protected $parameters_infos = ['requirement', 'type', 'description', 'default'];
+	/** @var array<string> */
+	protected array $parameters_infos = ['requirement', 'type', 'description', 'default'];
 
-	/** @var int */
-	protected $priority = 0;
+	protected int $priority = 0;
 
-	/**
-	 * @var string
-	 * @Enum({"json", "xml"})
-	 */
-	protected $format = 'json';
+	/** @Enum({"json", "xml"}) */
+	protected string $format = 'json';
 
-	/** @var array|null */
-	protected $example;
+	/** @var array<mixed>|null */
+	protected ?array $example = null;
 
-	/** @var string|null */
-	protected $section;
+	protected ?string $section = null;
 
-	/** @var array */
-	protected $tags = [];
+	/** @var array<mixed> */
+	protected array $tags = [];
 
-	/** @var array */
-	protected $response_codes = [];
+	/** @var array<int> */
+	protected array $response_codes = [];
+
+	/** @Enum({true, false}) */
+	protected bool $disable = false;
 
 	/**
-	 * @var bool
-	 * @Enum({true, false})
-	 */
-	protected $disable = false;
-
-	/**
-	 * @param array $data
+	 * @param array<mixed> $data
 	 */
 	public function __construct(array $data)
 	{
@@ -70,91 +57,91 @@ abstract class ApiRouteSpec
 		}
 	}
 
-
 	public function setDescription(?string $description): void
 	{
 		$this->description = $description;
 	}
-
 
 	public function getDescription(): ?string
 	{
 		return $this->description;
 	}
 
-
 	public function getPath(): string
 	{
 		return $this->path;
 	}
-
 
 	public function getMethod(): string
 	{
 		return $this->method;
 	}
 
-
+	/**
+	 * @return array<mixed>
+	 */
 	public function getParameters(): array
 	{
 		return $this->parameters;
 	}
-
 
 	public function setPriority(int $priority): void
 	{
 		$this->priority = $priority;
 	}
 
-
 	public function getPriority(): int
 	{
 		return $this->priority;
 	}
-
 
 	public function setFormat(string $format): void
 	{
 		$this->format = $format;
 	}
 
-
 	public function getFormat(): string
 	{
 		return $this->format;
 	}
 
-
+	/**
+	 * @param array<mixed>|null $example
+	 */
 	public function setExample(?array $example): void
 	{
 		$this->example = $example;
 	}
 
-
+	/**
+	 * @return array<mixed>|null
+	 */
 	public function getExample(): ?array
 	{
 		return $this->example;
 	}
-
 
 	public function setSection(?string $section): void
 	{
 		$this->section = $section;
 	}
 
-
 	public function getSection(): ?string
 	{
 		return $this->section;
 	}
 
-
+	/**
+	 * @param array<string> $tags
+	 */
 	public function setTags(array $tags): void
 	{
 		$this->tags = $tags;
 	}
 
-
+	/**
+	 * @return array<string>
+	 */
 	public function getTags(): array
 	{
 		$return = [];
@@ -173,30 +160,31 @@ abstract class ApiRouteSpec
 		return $return;
 	}
 
-
+	/**
+	 * @param array<int> $response_codes
+	 */
 	public function setResponseCodes(array $response_codes): void
 	{
 		$this->response_codes = $response_codes;
 	}
 
-
+	/**
+	 * @return array<int>
+	 */
 	public function getResponseCodes(): array
 	{
 		return $this->response_codes;
 	}
-
 
 	public function setDisable(bool $disable): void
 	{
 		$this->disable = (bool) $disable;
 	}
 
-
 	public function getDisable(): bool
 	{
 		return $this->disable;
 	}
-
 
 	protected function setPath(string $path): void
 	{
@@ -207,14 +195,13 @@ abstract class ApiRouteSpec
 		$this->path = (string) $path;
 	}
 
-
 	protected function setMethod(string $method): void
 	{
 		$this->method = strtoupper($method);
 	}
 
-
 	/**
+	 * @param array<mixed> $parameters
 	 * @throws ApiRouteWrongPropertyException
 	 */
 	protected function setParameters(array $parameters): void

@@ -14,40 +14,45 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
 use Nette\PhpGenerator\ClassType as GClassType;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use ReflectionClass;
 use ReflectionMethod;
+use stdClass;
 
+/**
+ * @property-read stdClass $config
+ */
 class ApiRouterExtension extends CompilerExtension
 {
 
-	/** @var array */
-	private $defaults = [
-		'ignoreAnnotation' => [],
-	];
+	private ?Reader $reader = null;
 
-	/** @var Reader */
-	private $reader;
+	private ?Definition $definition = null;
 
-	/** @var Definition */
-	private $definition;
+	public function getConfigSchema(): Schema
+	{
+		return Expect::structure([
+			'ignoreAnnotation' => Expect::array([]),
+		]);
+	}
 
 	public function beforeCompile(): void
 	{
-		$config = $this->_getConfig();
+		$config = $this->getConfig();
 
 		$builder = $this->getContainerBuilder();
-		$compiler_config = $this->compiler->getConfig();
+		$compilerConfig = $this->compiler->getConfig();
 
 		$this->setupReaderAnnotations($config);
-		$this->setupReader($compiler_config);
+		$this->setupReader($compilerConfig);
 
 		$routes = $this->findRoutes($builder);
 
 		$this->definition = $builder->addDefinition($this->prefix('resolver'))
-			->setClass(ApiRoutesResolver::class)
+			->setType(ApiRoutesResolver::class)
 			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes]);
 	}
-
 
 	public function afterCompile(GClassType $class): void
 	{
@@ -56,8 +61,7 @@ class ApiRouterExtension extends CompilerExtension
 		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
 	}
 
-
-	private function setupReaderAnnotations(array $config): void
+	private function setupReaderAnnotations(stdClass $config): void
 	{
 		/**
 		 * Prepare AnnotationRegistry
@@ -68,27 +72,31 @@ class ApiRouterExtension extends CompilerExtension
 		AnnotationReader::addGlobalIgnoredName('persistent');
 		AnnotationReader::addGlobalIgnoredName('inject');
 
-		foreach ($config['ignoreAnnotation'] as $ignore) {
+		foreach ($config->ignoreAnnotation as $ignore) {
 			AnnotationReader::addGlobalIgnoredName($ignore);
 		}
 	}
 
-
-	private function setupReader(array $compiler_config): void
+	/**
+	 * @param array<mixed> $compilerConfig
+	 */
+	private function setupReader(array $compilerConfig): void
 	{
-		$cache_path = $compiler_config['parameters']['tempDir'] . '/cache/ApiRouter.Annotations';
+		$cachePath = $compilerConfig['parameters']['tempDir'] . '/cache/ApiRouter.Annotations';
 
 		/**
 		 * Prepare AnnotationReader - use cached values
 		 */
 		$this->reader = new CachedReader(
 			new AnnotationReader(),
-			new FilesystemCache($cache_path),
-			$compiler_config['parameters']['debugMode']
+			new FilesystemCache($cachePath),
+			$compilerConfig['parameters']['debugMode']
 		);
 	}
 
-
+	/**
+	 * @return array<string, ApiRoute[]>
+	 */
 	private function findRoutes(ContainerBuilder $builder): array
 	{
 		/**
@@ -107,7 +115,9 @@ class ApiRouterExtension extends CompilerExtension
 		return $this->sortByPriority($routes);
 	}
 
-
+	/**
+	 * @param array<ApiRoute> $routes
+	 */
 	private function findRoutesInPresenter(string $presenter, array &$routes): void
 	{
 		$r = new ReflectionClass($presenter);
@@ -147,14 +157,16 @@ class ApiRouterExtension extends CompilerExtension
 		}
 	}
 
-
+	/**
+	 * @param array<ApiRoute> $routes
+	 */
 	private function findPresenterMethodRoute(
 		ReflectionMethod $method_reflection,
 		array &$routes,
 		ApiRoute $route
 	): void
 	{
-		$action_route = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
+		$actionRoute = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
 
 		/**
 		 * Get action without that ^action string
@@ -164,50 +176,41 @@ class ApiRouterExtension extends CompilerExtension
 		/**
 		 * Route can be defined also for particular action
 		 */
-		if (!$action_route) {
+		if (!$actionRoute) {
 			$route->setAction($action);
 
 			return;
 		}
 
-		$action_route->setDescription(Annotations::getAnnotation($method_reflection, 'description'));
+		$actionRoute->setDescription(Annotations::getAnnotation($method_reflection, 'description'));
 
 		/**
 		 * Action route will inherit presenter name, priority, etc from parent route
 		 */
-		$action_route->setPresenter($action_route->getPresenter() ?: $route->getPresenter());
-		$action_route->setPriority($action_route->getPriority() ?: $route->getPriority());
-		$action_route->setFormat($action_route->getFormat() ?: $route->getFormat());
-		$action_route->setSection($action_route->getSection() ?: $route->getSection());
-		$action_route->setAction($action, $action_route->getMethod() ?: null);
+		$actionRoute->setPresenter($actionRoute->getPresenter() ?: $route->getPresenter());
+		$actionRoute->setPriority($actionRoute->getPriority() ?: $route->getPriority());
+		$actionRoute->setFormat($actionRoute->getFormat() ?: $route->getFormat());
+		$actionRoute->setSection($actionRoute->getSection() ?: $route->getSection());
+		$actionRoute->setAction($action, $actionRoute->getMethod() ?: null);
 
-		$routes[$route->getPriority()][] = $action_route;
+		$routes[$route->getPriority()][] = $actionRoute;
 	}
 
-
+	/**
+	 * @param array<ApiRoute> $routes
+	 * @return array<ApiRoute>
+	 */
 	private function sortByPriority(array $routes): array
 	{
 		$return = [];
 
-		foreach ($routes as $priority => $priority_routes) {
+		foreach ($routes as $priority_routes) {
 			foreach ($priority_routes as $route) {
 				$return[] = $route;
 			}
 		}
 
 		return $return;
-	}
-
-
-	private function _getConfig(): array
-	{
-		$config = $this->validateConfig($this->defaults, $this->config);
-
-		if (!is_array($config['ignoreAnnotation'])) {
-			$config['ignoreAnnotation'] = [$config['ignoreAnnotation']];
-		}
-
-		return (array) $config;
 	}
 
 }
