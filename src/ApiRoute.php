@@ -54,6 +54,8 @@ class ApiRoute extends ApiRouteSpec implements Router
 	/** @var array<mixed> */
 	private array $placeholderOrder = [];
 
+	private bool $autoBasePath = true;
+
 	/**
 	 * @param array<mixed> $data
 	 */
@@ -230,6 +232,11 @@ class ApiRoute extends ApiRouteSpec implements Router
 		return Strings::upper($request->getMethod());
 	}
 
+	public function setAutoBasePath(bool $autoBasePath): void
+	{
+		$this->autoBasePath = $autoBasePath;
+	}
+
 	/********************************************************************************
 	 *                              Interface IRouter *
 	 ********************************************************************************/
@@ -250,16 +257,20 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 		$url = $httpRequest->getUrl();
 
-		// Resolve base path
-		$basePath = $url->getBasePath();
-		if (strncmp($url->getPath(), $basePath, strlen($basePath)) !== 0) {
-			return null;
+		if ($this->autoBasePath) {
+			// Resolve base path
+			$basePath = $url->getBasePath();
+			if (strncmp($url->getPath(), $basePath, strlen($basePath)) !== 0) {
+				return null;
+			}
+
+			$path = substr($url->getPath(), strlen($basePath));
+
+			// Ensure start with /
+			$path = '/' . ltrim($path, '/');
+		} else {
+			$path = $url->getPath();
 		}
-
-		$path = substr($url->getPath(), strlen($basePath));
-
-		// Ensure start with /
-		$path = '/' . ltrim($path, '/');
 
 		// Build path mask
 		// @phpcs:ignore
