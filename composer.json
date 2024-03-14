@@ -30,7 +30,7 @@
     "nette/di": "^3.1.8",
     "contributte/utils": "^0.5.2 || ^0.6.0 || ^0.7.0",
     "doctrine/cache": "^1.13.0",
-    "doctrine/annotations": "^1.14.3"
+    "doctrine/annotations": "^1.14.3 || ^2.0.0"
   },
   "require-dev": {
     "contributte/qa": "^0.4",
