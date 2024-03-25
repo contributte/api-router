@@ -356,7 +356,6 @@ class ApiRoute extends ApiRouteSpec implements Router
 			'method' => $method,
 			'post' => $httpRequest->getPost(),
 			'files' => $httpRequest->getFiles(),
-			Request::SECURED => $httpRequest->isSecured(),
 		], $params);
 
 		/**
