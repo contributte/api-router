@@ -2,7 +2,6 @@
 
 namespace Contributte\ApiRouter;
 
-use Nette\Application\Request;
 use Nette\Http\IRequest;
 use Nette\Http\UrlScript;
 use Nette\Routing\Router;
@@ -98,6 +97,36 @@ class ApiRoute extends ApiRouteSpec implements Router
 		parent::__construct($data);
 	}
 
+	/**
+	 * @phpstan-param array{
+	 *     path: string,
+	 *     presenter: string|null,
+	 *     parameters: array<mixed>,
+	 *     actions: array<string, string>,
+	 *     formats: array<string, string>,
+	 *     placeholderOrder: array<mixed>,
+	 *     disable: bool,
+	 *     autoBasePath: bool
+	 * } $data
+	 */
+	public static function fromArray(array $data): self
+	{
+		$route = new self($data['path'], $data['presenter'], []);
+		$route->parameters = $data['parameters'];
+		$route->actions = $data['actions'];
+		$route->formats = $data['formats'];
+		$route->placeholderOrder = $data['placeholderOrder'];
+		$route->disable = $data['disable'];
+		$route->autoBasePath = $data['autoBasePath'];
+
+		return $route;
+	}
+
+	public function getMask(): string
+	{
+		return $this->path;
+	}
+
 	public function setPresenter(?string $presenter): void
 	{
 		$this->presenter = $presenter;
@@ -119,6 +148,11 @@ class ApiRoute extends ApiRouteSpec implements Router
 		}
 
 		$this->actions[$method] = $action;
+	}
+
+	public function getAction(string $method): ?string
+	{
+		return $this->actions[$method] ?? null;
 	}
 
 	/**
@@ -358,7 +392,6 @@ class ApiRoute extends ApiRouteSpec implements Router
 			'method' => $method,
 			'post' => $httpRequest->getPost(),
 			'files' => $httpRequest->getFiles(),
-			Request::SECURED => $httpRequest->isSecured(),
 		], $params);
 
 		/**
@@ -420,6 +453,32 @@ class ApiRoute extends ApiRouteSpec implements Router
 		$query = http_build_query($parameters);
 
 		return $base_url . $path . ($query ? '?' . $query : '');
+	}
+
+	/**
+	 * @return array{
+	 *     path: string,
+	 *     presenter: string|null,
+	 *     parameters: array<mixed>,
+	 *     actions: array<string, string>,
+	 *     formats: array<string, string>,
+	 *     placeholderOrder: array<mixed>,
+	 *     disable: bool,
+	 *     autoBasePath: bool
+	 * }
+	 */
+	public function toArray(): array
+	{
+		return [
+			'path' => $this->path,
+			'presenter' => $this->presenter,
+			'parameters' => $this->parameters,
+			'actions' => $this->actions,
+			'formats' => $this->formats,
+			'placeholderOrder' => $this->placeholderOrder,
+			'disable' => $this->disable,
+			'autoBasePath' => $this->autoBasePath,
+		];
 	}
 
 	private function prepareForMatch(string $string): string

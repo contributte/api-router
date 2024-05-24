@@ -48,11 +48,11 @@ final class ApiRouteTest extends TestCase
 
 	public function testResolveMethod(): void
 	{
-		$headers = null;
+		$headers = [];
 		$method = 'GET';
 
 		$u = new UrlScript('http://foo.com/users');
-		$r = new Request($u, null, null, null, null, $headers, $method);
+		$r = new Request($u, [], [], [], $headers, $method);
 
 		$route = new ApiRoute('/users', 'U');
 
@@ -60,17 +60,17 @@ final class ApiRouteTest extends TestCase
 
 		$headers = ['X-HTTP-Method-Override' => 'POST'];
 		$method = 'GET';
-		$r = new Request($u, null, null, null, $headers, $method);
+		$r = new Request($u, [], [], [], $headers, $method);
 
 		Assert::same('POST', $route->resolveMethod($r));
 
 		$u = new UrlScript('http://foo.com/users?__apiRouteMethod=PUT');
-		$r = new Request($u, null, null, null, $headers, $method);
+		$r = new Request($u, [], [], [], $headers, $method);
 
 		Assert::same('POST', $route->resolveMethod($r));
 
 		$u = new UrlScript('http://foo.com/users?__apiRouteMethod=PUT');
-		$r = new Request($u, null, null, null, null, $method);
+		$r = new Request($u, [], [], [], [], $method);
 
 		Assert::same('PUT', $route->resolveMethod($r));
 	}
@@ -79,13 +79,13 @@ final class ApiRouteTest extends TestCase
 	{
 		$route = new ApiRoute('/users', 'U', ['methods' => ['POST' => 'create']]);
 		$u = new UrlScript('http://foo.com/users');
-		$r = new Request($u, null, null, null, null, 'GET');
+		$r = new Request($u, [], [], [], [], 'GET');
 
 		Assert::same(null, $route->match($r));
 
 		$route = new ApiRoute('/users', 'U', ['methods' => ['GET' => 'read']]);
 		$u = new UrlScript('http://foo.com/users');
-		$r = new Request($u, null, null, null, null, 'POST');
+		$r = new Request($u, [], [], [], [], 'POST');
 
 		Assert::same(null, $route->match($r));
 	}

@@ -5,20 +5,20 @@ namespace Contributte\ApiRouter\DI;
 use Contributte\ApiRouter\ApiRoute;
 use Contributte\Utils\Annotations;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\FilesystemCache;
 use Nette\Application\IPresenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
+use Nette\DI\Definitions\Statement;
 use Nette\PhpGenerator\ClassType as GClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use ReflectionClass;
 use ReflectionMethod;
 use stdClass;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * @property-read stdClass $config
@@ -48,10 +48,15 @@ class ApiRouterExtension extends CompilerExtension
 		$this->setupReader($compilerConfig);
 
 		$routes = $this->findRoutes($builder);
+		$routesStatements = [];
+
+		foreach ($routes as $route) {
+			$routesStatements[] = new Statement(ApiRoute::class . '::fromArray', [$route->toArray()]);
+		}
 
 		$this->definition = $builder->addDefinition($this->prefix('resolver'))
 			->setType(ApiRoutesResolver::class)
-			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routes]);
+			->addSetup('prepandRoutes', [$builder->getDefinition('router'), $routesStatements]);
 	}
 
 	public function afterCompile(GClassType $class): void
@@ -63,12 +68,6 @@ class ApiRouterExtension extends CompilerExtension
 
 	private function setupReaderAnnotations(stdClass $config): void
 	{
-		/**
-		 * Prepare AnnotationRegistry
-		 */
-		AnnotationRegistry::registerFile(__DIR__ . '/../ApiRoute.php');
-		AnnotationRegistry::registerFile(__DIR__ . '/../ApiRouteSpec.php');
-
 		AnnotationReader::addGlobalIgnoredName('persistent');
 		AnnotationReader::addGlobalIgnoredName('inject');
 
@@ -82,14 +81,9 @@ class ApiRouterExtension extends CompilerExtension
 	 */
 	private function setupReader(array $compilerConfig): void
 	{
-		$cachePath = $compilerConfig['parameters']['tempDir'] . '/cache/ApiRouter.Annotations';
-
-		/**
-		 * Prepare AnnotationReader - use cached values
-		 */
-		$this->reader = new CachedReader(
+		$this->reader = new PsrCachedReader(
 			new AnnotationReader(),
-			new FilesystemCache($cachePath),
+			new FilesystemAdapter('ApiRouter.Annotations', 0, $compilerConfig['parameters']['tempDir'] . '/cache'),
 			$compilerConfig['parameters']['debugMode']
 		);
 	}
