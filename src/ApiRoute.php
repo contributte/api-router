@@ -224,6 +224,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 
 		if ($request->getQuery('__apiRouteMethod')) {
 			$method = Strings::upper($request->getQuery('__apiRouteMethod'));
+
 			if (isset($this->actions[$method])) {
 				return $method;
 			}
@@ -260,6 +261,7 @@ class ApiRoute extends ApiRouteSpec implements Router
 		if ($this->autoBasePath) {
 			// Resolve base path
 			$basePath = $url->getBasePath();
+
 			if (strncmp($url->getPath(), $basePath, strlen($basePath)) !== 0) {
 				return null;
 			}

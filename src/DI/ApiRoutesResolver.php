@@ -63,7 +63,7 @@ class ApiRoutesResolver
 		}
 
 		foreach (array_reverse($keys) as $key) {
-			unset($router[$key]);
+			unset($router[$key]); // @phpstan-ignore-line
 		}
 
 		return $return;
