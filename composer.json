@@ -24,12 +24,12 @@
     }
   ],
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.2",
     "nette/http": "^3.3.0",
     "nette/application": "^3.2.5",
     "nette/di": "^3.2.2",
     "contributte/utils": "^0.6.0 || ^0.7.0",
-    "symfony/cache": "^6.4.7 || ^7.0.7",
+    "symfony/cache": "^7.0.7",
     "doctrine/annotations": "^2.0.1"
   },
   "require-dev": {
