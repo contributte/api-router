@@ -6,7 +6,7 @@ use Contributte\ApiRouter\ApiRoute;
 use Nette\Application\UI\Presenter;
 
 #[ApiRoute(
-	'/api/users[/<id>]',
+	path: '/api/users[/<id>]',
 	parameters: [
 		'id' => [
 			'requirement' => '\d+',
@@ -21,7 +21,7 @@ class UsersController extends Presenter
 	 * Get user detail
 	 */
 	#[ApiRoute(
-		'/api/users/<id>[/<foo>-<bar>]',
+		path: '/api/users/<id>[/<foo>-<bar>]',
 		parameters: [
 			'id' => [
 				'requirement' => '\d+',

@@ -50,7 +50,7 @@ use Contributte\ApiRouter\ApiRoute;
  * API for managing users
  */
 #[ApiRoute(
-	'/api-router/api/users[/<id>]',
+	path: '/api-router/api/users[/<id>]',
 	parameters: [
 		'id' => [
 			'requirement' => '\d+',
@@ -67,7 +67,7 @@ class UsersController extends Presenter
 	 * Get user detail
 	 */
 	#[ApiRoute(
-		'/api-router/api/users/<id>[/<foo>-<bar>]',
+		path: '/api-router/api/users/<id>[/<foo>-<bar>]',
 		parameters: [
 			'id' => [
 				'requirement' => '\d+',
@@ -122,18 +122,18 @@ class RouterFactory
 		 * 	PUT     => UsersPresenter::actionUpdate()
 		 * 	DELETE  => UsersPresenter::actionDelete()
 		 */
-		$router[] = new ApiRoute('/hello', 'Users');
+		$router[] = new ApiRoute(path: '/hello', presenter: 'Users');
 
 		/**
 		 * Custom matching:
 		 * 	GET  => UsersPresenter::actionSuperRead()
 		 * 	POST => UsersPresenter::actionCreate()
 		 */
-		$router[] = new ApiRoute('/hello', 'ApiRouter', methods: ['GET' => 'superRead', 'POST']);
+		$router[] = new ApiRoute(path: '/hello', presenter: 'ApiRouter', methods: ['GET' => 'superRead', 'POST']);
 
 		$router[] = new ApiRoute(
-			'/api-router/api/users[/<id>]',
-			'Resources:Users',
+			path: '/api-router/api/users[/<id>]',
+			presenter: 'Resources:Users',
 			parameters: [
 				'id' => ['requirement' => '\d+', 'default' => 10],
 			],
@@ -141,8 +141,8 @@ class RouterFactory
 		);
 
 		$router[] = new ApiRoute(
-			'/api-router/api/users/<id>[/<foo>-<bar>]',
-			'Resources:Users',
+			path: '/api-router/api/users/<id>[/<foo>-<bar>]',
+			presenter: 'Resources:Users',
 			parameters: [
 				'id' => ['requirement' => '\d+'],
 			],
@@ -150,7 +150,7 @@ class RouterFactory
 		);
 
 		# Disable basePath detection
-		$route = new ApiRoute('/api-router/api/users', 'Resources:Users');
+		$route = new ApiRoute(path: '/api-router/api/users', presenter: 'Resources:Users');
 		$route->setAutoBasePath(false);
 		$router[] = $route;
 
