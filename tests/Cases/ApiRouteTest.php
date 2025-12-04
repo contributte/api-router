@@ -23,9 +23,7 @@ final class ApiRouteTest extends TestCase
 
 		Assert::same(['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'], $route->getMethods());
 
-		$route = new ApiRoute('/u', 'U', [
-			'methods' => ['POST' => 'create'],
-		]);
+		$route = new ApiRoute('/u', 'U', methods: ['POST' => 'create']);
 
 		Assert::same(['POST'], $route->getMethods());
 
@@ -77,13 +75,13 @@ final class ApiRouteTest extends TestCase
 
 	public function testMatchMethods(): void
 	{
-		$route = new ApiRoute('/users', 'U', ['methods' => ['POST' => 'create']]);
+		$route = new ApiRoute('/users', 'U', methods: ['POST' => 'create']);
 		$u = new UrlScript('http://foo.com/users');
 		$r = new Request($u, [], [], [], [], 'GET');
 
 		Assert::same(null, $route->match($r));
 
-		$route = new ApiRoute('/users', 'U', ['methods' => ['GET' => 'read']]);
+		$route = new ApiRoute('/users', 'U', methods: ['GET' => 'read']);
 		$u = new UrlScript('http://foo.com/users');
 		$r = new Request($u, [], [], [], [], 'POST');
 
