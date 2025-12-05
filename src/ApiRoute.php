@@ -2,16 +2,14 @@
 
 namespace Contributte\ApiRouter;
 
+use Attribute;
 use Nette\Http\IRequest;
 use Nette\Http\UrlScript;
 use Nette\Routing\Router;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
 
-/**
- * @Annotation
- * @Target({"CLASS", "METHOD"})
- */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 class ApiRoute extends ApiRouteSpec implements Router
 {
 
@@ -56,43 +54,64 @@ class ApiRoute extends ApiRouteSpec implements Router
 	private bool $autoBasePath = true;
 
 	/**
-	 * @param array<mixed> $data
+	 * @param array<mixed> $parameters
+	 * @param array<string, string> $methods
+	 * @param array<mixed>|null $example
+	 * @param array<string> $tags
+	 * @param array<int> $response_codes
 	 */
-	public function __construct(mixed $path, ?string $presenter = null, array $data = [])
+	public function __construct(
+		string $path,
+		?string $presenter = null,
+		array $parameters = [],
+		array $methods = [],
+		?string $description = null,
+		?string $method = null,
+		int $priority = 0,
+		string $format = 'json',
+		?array $example = null,
+		?string $section = null,
+		array $tags = [],
+		array $response_codes = [],
+		bool $disable = false,
+	)
 	{
-		/**
-		 * Interface for setting route via annotation or directly
-		 */
-		if (!is_array($path)) {
-			$data['value'] = $path;
-			$data['presenter'] = $presenter;
+		if ($methods === []) {
+			$this->actions = $this->defaultActions;
+		} else {
+			foreach ($methods as $httpMethod => $action) {
+				if (is_string($httpMethod)) {
+					$this->setAction($action, $httpMethod);
+				} else {
+					$m = $action;
 
-			if (!isset($data['methods']) || !$data['methods']) {
-				$this->actions = $this->defaultActions;
-			} else {
-				foreach ($data['methods'] as $method => $action) {
-					if (is_string($method)) {
-						$this->setAction($action, $method);
-					} else {
-						$m = $action;
-
-						if (isset($this->defaultActions[$m])) {
-							$this->setAction($this->defaultActions[$m], $m);
-						}
+					if (isset($this->defaultActions[$m])) {
+						$this->setAction($this->defaultActions[$m], $m);
 					}
 				}
-
-				unset($data['methods']);
 			}
-		} else {
-			$data = $path;
 		}
 
-		/**
-		 * Set Path
-		 */
-		$this->setPath($data['value']);
-		unset($data['value']);
+		$this->setPath($path);
+		$this->presenter = $presenter;
+
+		$data = array_filter([
+			'parameters' => $parameters,
+			'description' => $description,
+			'method' => $method,
+			'priority' => $priority,
+			'format' => $format,
+			'example' => $example,
+			'section' => $section,
+			'tags' => $tags,
+			'response_codes' => $response_codes,
+			'disable' => $disable,
+		], fn ($v, $k) => match ($k) {
+			'priority' => $v !== 0,
+			'format' => $v !== 'json',
+			'disable' => $v !== false,
+			default => $v !== null && $v !== [],
+		}, ARRAY_FILTER_USE_BOTH);
 
 		parent::__construct($data);
 	}

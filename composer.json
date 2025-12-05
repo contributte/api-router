@@ -1,7 +1,7 @@
 {
   "name": "contributte/api-router",
   "type": "library",
-  "description": "RESTful Router for your Apis in Nette Framework - created either directly or via annotation",
+  "description": "RESTful Router for your Apis in Nette Framework - created either directly or via attributes",
   "keywords": [
     "rest",
     "api",
@@ -28,9 +28,7 @@
     "nette/http": "^3.3.0",
     "nette/application": "^3.2.5",
     "nette/di": "^3.2.2",
-    "contributte/utils": "^0.6.0 || ^0.7.0",
-    "symfony/cache": "^7.0.7",
-    "doctrine/annotations": "^2.0.1"
+    "contributte/utils": "^0.6.0 || ^0.7.0"
   },
   "require-dev": {
     "contributte/qa": "^0.4",

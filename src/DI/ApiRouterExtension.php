@@ -4,48 +4,23 @@ namespace Contributte\ApiRouter\DI;
 
 use Contributte\ApiRouter\ApiRoute;
 use Contributte\Utils\Annotations;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\PsrCachedReader;
-use Doctrine\Common\Annotations\Reader;
 use Nette\Application\IPresenter;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\Statement;
 use Nette\PhpGenerator\ClassType as GClassType;
-use Nette\Schema\Expect;
-use Nette\Schema\Schema;
 use ReflectionClass;
 use ReflectionMethod;
-use stdClass;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
-/**
- * @property-read stdClass $config
- */
 class ApiRouterExtension extends CompilerExtension
 {
 
-	private ?Reader $reader = null;
-
 	private ?Definition $definition = null;
-
-	public function getConfigSchema(): Schema
-	{
-		return Expect::structure([
-			'ignoreAnnotation' => Expect::array([]),
-		]);
-	}
 
 	public function beforeCompile(): void
 	{
-		$config = $this->getConfig();
-
 		$builder = $this->getContainerBuilder();
-		$compilerConfig = $this->compiler->getConfig();
-
-		$this->setupReaderAnnotations($config);
-		$this->setupReader($compilerConfig);
 
 		$routes = $this->findRoutes($builder);
 		$routesStatements = [];
@@ -64,28 +39,6 @@ class ApiRouterExtension extends CompilerExtension
 		parent::afterCompile($class);
 
 		$class->getMethod('initialize')->addBody('$this->getService(?);', [$this->definition->getName()]);
-	}
-
-	private function setupReaderAnnotations(stdClass $config): void
-	{
-		AnnotationReader::addGlobalIgnoredName('persistent');
-		AnnotationReader::addGlobalIgnoredName('inject');
-
-		foreach ($config->ignoreAnnotation as $ignore) {
-			AnnotationReader::addGlobalIgnoredName($ignore);
-		}
-	}
-
-	/**
-	 * @param array<mixed> $compilerConfig
-	 */
-	private function setupReader(array $compilerConfig): void
-	{
-		$this->reader = new PsrCachedReader(
-			new AnnotationReader(),
-			new FilesystemAdapter('ApiRouter.Annotations', 0, $compilerConfig['parameters']['tempDir'] . '/cache'),
-			$compilerConfig['parameters']['debugMode']
-		);
 	}
 
 	/**
@@ -116,11 +69,13 @@ class ApiRouterExtension extends CompilerExtension
 	{
 		$r = new ReflectionClass($presenter);
 
-		$route = $this->reader->getClassAnnotation($r, ApiRoute::class);
+		$attributes = $r->getAttributes(ApiRoute::class);
 
-		if (!$route) {
+		if ($attributes === []) {
 			return;
 		}
+
+		$route = $attributes[0]->newInstance();
 
 		/**
 		 * Add route to priority-half-sorted list
@@ -160,7 +115,8 @@ class ApiRouterExtension extends CompilerExtension
 		ApiRoute $route
 	): void
 	{
-		$actionRoute = $this->reader->getMethodAnnotation($method_reflection, ApiRoute::class);
+		$attributes = $method_reflection->getAttributes(ApiRoute::class);
+		$actionRoute = $attributes !== [] ? $attributes[0]->newInstance() : null;
 
 		/**
 		 * Get action without that ^action string
