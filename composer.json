@@ -28,7 +28,7 @@
     "nette/http": "^3.3.0",
     "nette/application": "^3.2.5",
     "nette/di": "^3.2.2",
-    "contributte/utils": "^0.6.0 || ^0.7.0"
+    "contributte/utils": "^0.7.0 || ^0.8.0"
   },
   "require-dev": {
     "contributte/qa": "^0.4",
