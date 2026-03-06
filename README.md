@@ -2,7 +2,7 @@
 
 <p align=center>
   <a href="https://github.com/contributte/api-router/actions"><img src="https://badgen.net/github/checks/contributte/api-router/master"></a>
-  <a href="https://coveralls.io/r/contributte/api-router"><img src="https://badgen.net/coveralls/c/github/contributte/api-router"></a>
+  <a href="https://codecov.io/gh/contributte/api-router"><img src="https://badgen.net/codecov/c/github/contributte/api-router"></a>
   <a href="https://packagist.org/packages/contributte/api-router"><img src="https://badgen.net/packagist/dm/contributte/api-router"></a>
   <a href="https://packagist.org/packages/contributte/api-router"><img src="https://badgen.net/packagist/v/contributte/api-router"></a>
 </p>
