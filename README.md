@@ -31,10 +31,10 @@ Attribute-friendly API routing for Nette applications with HTTP method mapping a
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Configure](#configure)
-- [Using attributes](#using-attributes)
-- [Using Nette Router](#using-nette-router)
-- [API documentation](#api-documentation)
+  - [Configure](#configure)
+  - [Using attributes](#using-attributes)
+  - [Using Nette Router](#using-nette-router)
+  - [API documentation](#api-documentation)
 - [Examples](#examples)
 - [Development](#development)
 
@@ -50,7 +50,7 @@ composer require contributte/api-router
 
 ### Configure
 
-At first register compiler extension.
+First, register the compiler extension.
 
 ```neon
 extensions:
@@ -67,7 +67,7 @@ services:
 
 ### Using attributes
 
-Example of used attributes. Don't forget to import `Contributte\ApiRouter\ApiRoute`.
+Example of attribute usage. Don't forget to import `Contributte\ApiRouter\ApiRoute`.
 
 ```php
 namespace App\ResourcesModule\Presenters;
@@ -193,11 +193,11 @@ class RouterFactory
 ### API documentation
 
 There is another extension for Nette which works pretty well with ApiRouter: [ApiDocu](https://github.com/contributte/api-docu).
-ApiDocu generates awesome API documentation from your RESTful routes. It can also show you documentation in application runtime!
+ApiDocu generates API documentation from your RESTful routes and can show it in the application runtime.
 
 ## Examples
 
-We've made a few skeleton with preconfigured `contributte/api-router`.
+We provide a skeleton preconfigured with `contributte/api-router`.
 
 https://github.com/contributte/api-router-skeleton
 
@@ -205,7 +205,7 @@ https://github.com/contributte/api-router-skeleton
 
 See [how to contribute](https://contributte.org/contributing.html) to this package.
 
-This package is currently maintaining by these authors.
+This package is currently maintained by these authors.
 
 <a href="https://github.com/paveljanda">
   <img width="80" height="80" src="https://avatars2.githubusercontent.com/u/1488874?v=3&s=80">
