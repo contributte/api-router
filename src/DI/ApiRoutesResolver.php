@@ -6,6 +6,7 @@ use ArrayAccess;
 use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
 use Nette\Application\Routers\RouteList;
 use Nette\Routing\Route;
+use Nette\Routing\RouteList as NetteRouteList;
 use Nette\Routing\Router;
 
 class ApiRoutesResolver
@@ -22,6 +23,18 @@ class ApiRoutesResolver
 			return;
 		}
 
+		/**
+		 * Prepend ApiRoutes in reverse order, so they keep their order
+		 * and user routes (including their flags) stay untouched
+		 */
+		if ($router instanceof NetteRouteList) {
+			foreach (array_reverse($routes) as $route) {
+				$router->prepend($route);
+			}
+
+			return;
+		}
+
 		if (!($router instanceof ArrayAccess)) {
 			throw new ApiRouteWrongRouterException(sprintf(
 				'ApiRoutesResolver can not add ApiRoutes to your router. Use for example %s instead',
@@ -29,24 +42,16 @@ class ApiRoutesResolver
 			));
 		}
 
-		$userRoutes = $this->findAndDestroyUserRoutes($router);
-
 		/**
-		 * Add ApiRoutes first
+		 * Other ArrayAccess routers - just add ApiRoutes
 		 */
 		foreach ($routes as $route) {
-			$router[] = $route;
-		}
-
-		/**
-		 * User routes on second place
-		 */
-		foreach ($userRoutes as $route) {
 			$router[] = $route;
 		}
 	}
 
 	/**
+	 * @deprecated Not used anymore, ApiRoutesResolver::prepandRoutes() uses RouteList::prepend()
 	 * @return array<int, Router>
 	 */
 	public function findAndDestroyUserRoutes(Router $router): array
