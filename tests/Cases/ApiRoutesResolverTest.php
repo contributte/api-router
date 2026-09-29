@@ -9,7 +9,6 @@ use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Tester\Assert;
 use Tester\TestCase;
-use Throwable;
 
 require __DIR__ . '/../bootstrap.php';
 
@@ -87,16 +86,10 @@ final class ApiRoutesResolverTest extends TestCase
 
 		$resolver = new ApiRoutesResolver();
 
-		try {
-			$resolver->prepandRoutes($router, $api_routes);
-
-			/**
-			 * This point can not be reached
-			 */
-			Assert::false(true);
-		} catch (Throwable $e) {
-			Assert::true($e instanceof ApiRouteWrongRouterException);
-		}
+		Assert::exception(
+			static fn () => $resolver->prepandRoutes($router, $api_routes),
+			ApiRouteWrongRouterException::class
+		);
 	}
 
 }
