@@ -5,7 +5,6 @@ namespace Contributte\ApiRouter\DI;
 use ArrayAccess;
 use Contributte\ApiRouter\Exception\ApiRouteWrongRouterException;
 use Nette\Application\Routers\RouteList;
-use Nette\Routing\Route;
 use Nette\Routing\RouteList as NetteRouteList;
 use Nette\Routing\Router;
 
@@ -15,7 +14,7 @@ class ApiRoutesResolver
 	/**
 	 * Place REST API routes at the beginnig of all routes
 	 *
-	 * @param Route[] $routes
+	 * @param array<Router> $routes
 	 */
 	public function prepandRoutes(Router $router, array $routes): void
 	{
@@ -51,7 +50,8 @@ class ApiRoutesResolver
 	}
 
 	/**
-	 * @deprecated Not used anymore, ApiRoutesResolver::prepandRoutes() uses RouteList::prepend()
+	 * @deprecated Not used anymore, ApiRoutesResolver::prepandRoutes() uses RouteList::prepend();
+	 *             triggers deprecations on nette/application >= 3.3; will be removed in next major
 	 * @return array<int, Router>
 	 */
 	public function findAndDestroyUserRoutes(Router $router): array

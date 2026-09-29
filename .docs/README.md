@@ -105,7 +105,6 @@ namespace App;
 
 use Contributte\ApiRouter\ApiRoute;
 use Nette;
-use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 
 class RouterFactory
@@ -122,39 +121,39 @@ class RouterFactory
 		 * 	PUT     => UsersPresenter::actionUpdate()
 		 * 	DELETE  => UsersPresenter::actionDelete()
 		 */
-		$router[] = new ApiRoute(path: '/hello', presenter: 'Users');
+		$router->add(new ApiRoute(path: '/hello', presenter: 'Users'));
 
 		/**
 		 * Custom matching:
 		 * 	GET  => UsersPresenter::actionSuperRead()
 		 * 	POST => UsersPresenter::actionCreate()
 		 */
-		$router[] = new ApiRoute(path: '/hello', presenter: 'ApiRouter', methods: ['GET' => 'superRead', 'POST']);
+		$router->add(new ApiRoute(path: '/hello', presenter: 'ApiRouter', methods: ['GET' => 'superRead', 'POST']));
 
-		$router[] = new ApiRoute(
+		$router->add(new ApiRoute(
 			path: '/api-router/api/users[/<id>]',
 			presenter: 'Resources:Users',
 			parameters: [
 				'id' => ['requirement' => '\d+', 'default' => 10],
 			],
 			priority: 1,
-		);
+		));
 
-		$router[] = new ApiRoute(
+		$router->add(new ApiRoute(
 			path: '/api-router/api/users/<id>[/<foo>-<bar>]',
 			presenter: 'Resources:Users',
 			parameters: [
 				'id' => ['requirement' => '\d+'],
 			],
 			priority: 1,
-		);
+		));
 
 		# Disable basePath detection
 		$route = new ApiRoute(path: '/api-router/api/users', presenter: 'Resources:Users');
 		$route->setAutoBasePath(false);
-		$router[] = $route;
+		$router->add($route);
 
-		$router[] = new Route('<presenter>/<action>', 'Homepage:default');
+		$router->addRoute('<presenter>/<action>', 'Homepage:default');
 
 		return $router;
 	}
